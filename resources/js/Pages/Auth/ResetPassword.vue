@@ -1,0 +1,115 @@
+<script setup>
+    import { useForm } from '@inertiajs/vue3';
+    import Container from '../../Components/Container.vue';
+    import PrimaryBtn from '../../Components/PrimaryBtn.vue';
+    import Title from '../../Components/Title.vue';
+
+    const props = defineProps({
+        email: String,
+        token: String,
+    });
+
+    const form = useForm({
+        token: props.token,
+        email: props.email,
+        password: "",
+        password_confirmation: "",
+    });
+
+    const submit = () => {
+        form.post(route("password.update"), {
+            onFinish: () => form.reset("password", "password_confirmation"),
+        });
+    };
+</script>
+
+<template>
+    <Head title="| Reset Password" />
+    <Container class="w-1/2">
+        <div class="text-center mb-8">
+            <Title>Enter Your New Password</Title>
+        </div>
+        <form @submit.prevent="submit" class="space-y-6">
+
+            <!-- Email Input -->
+            <div>
+                <label for="email" class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                    Email
+                </label>
+                <div class="relative mt-1 rounded-md">
+                    <div class="pointer-event-non absolute inset-y-0 left-0 flex items-center pl-3">
+                        <span class="grid place-content-center text-sm text-slate-400">
+                            <i class="fa-solid fa-at"></i>
+                        </span>
+                    </div>
+                    <input
+                        type="text"
+                        id="email"
+                        name="email"
+                        v-model="form.email"
+                        :class="{
+                            'border-red-500 ring-1 ring-red-500': form.errors.email
+                        }"
+                        class="block w-full pl-9 rounded-md text-sm dark:text-slate-900 border-slate-300 outline-0 focus:ring-1 focus:ring-inset focus:ring-blue-400 focus:border-blue-400 placeholder:text-slate-400"
+                    />
+                </div>
+                <p v-if="form.errors.email" class="text-red-500  mt-2 text-sm font-medium">{{ form.errors.email }}</p>
+
+            </div>
+
+
+
+            <!-- Password Input -->
+            <div>
+                <label for="password" class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                    Password
+                </label>
+                <div class="relative mt-1 rounded-md">
+                    <div class="pointer-event-non absolute inset-y-0 left-0 flex items-center pl-3">
+                        <span class="grid place-content-center text-sm text-slate-400">
+                            <i class="fa-solid fa-key"></i>
+                        </span>
+                    </div>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        v-model="form.password"
+                        :class="{
+                            'border-red-500 ring-1 ring-red-500': form.errors.password
+                        }"
+                        class="block w-full pl-9 rounded-md text-sm dark:text-slate-900 border-slate-300 outline-0 focus:ring-1 focus:ring-inset focus:ring-blue-400 focus:border-blue-400 placeholder:text-slate-400"
+                    />
+                </div>
+                <p v-if="form.errors.password" class="text-red-500 text-sm font-medium mt-2">{{ form.errors.password }}</p>
+
+            </div>
+
+            <!-- Confirm Password Input -->
+            <div>
+                <label for="password_confirmation" class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                    Confirm Password
+                </label>
+                <div class="relative mt-1 rounded-md">
+                    <div class="pointer-event-non absolute inset-y-0 left-0 flex items-center pl-3">
+                        <span class="grid place-content-center text-sm text-slate-400">
+                            <i class="fa-solid fa-key"></i>
+                        </span>
+                    </div>
+                    <input
+                        type="password"
+                        id="password_confirmation"
+                        name="password_confirmation"
+                        v-model="form.password_confirmation"
+                        :class="{
+                            'border-red-500 ring-1 ring-red-500': form.errors.password
+                        }"
+                        class="block w-full pl-9 rounded-md text-sm dark:text-slate-900 border-slate-300 outline-0 focus:ring-1 focus:ring-inset focus:ring-blue-400 focus:border-blue-400 placeholder:text-slate-400"
+                    />
+                </div>
+            </div>
+
+            <PrimaryBtn :disabled="form.processing">Reset Password</PrimaryBtn>
+        </form>
+    </Container>
+</template>
