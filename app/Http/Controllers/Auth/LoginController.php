@@ -28,13 +28,12 @@ class LoginController extends Controller
             // Get the authenticated user
             $user = Auth::user();
 
-            // Redirect based on role
+            // Redirect based on role using URL paths instead of named routes
             return match ($user->role) {
-                'admin' => redirect()->route('admin.dashboard'),
-                'donor' => redirect()->route('donor.dashboard'),
-                'recipient' => redirect()->route('recipient.dashboard'),
-                'hospital' => redirect()->route('hospital.dashboard'),
-                'organization' => redirect()->route('organization.dashboard'),
+                'admin' => redirect()->intended('/admin/dashboard'),
+                'user' => redirect()->intended('/donor/dashboard'),
+                'hospital' => redirect()->intended('/hospital/dashboard'),
+                'organization' => redirect()->intended('/organization/dashboard'),
                 default => redirect('/'),
             };
         }

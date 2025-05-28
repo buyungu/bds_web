@@ -133,7 +133,7 @@ const formatDate = (date) => new Date(date).toLocaleDateString();
     </Container>
 
     <Container class="my-8" v-if="canModify">
-        <div v-if="props.enrolledDonors.data.length">
+        <div v-if="props.enrolledDonors && props.enrolledDonors.data && props.enrolledDonors.data.length">
                 <div class="mb-6">
 
 
@@ -196,7 +196,7 @@ const formatDate = (date) => new Date(date).toLocaleDateString();
                                 <td
                                     class="p-3 text-left"
                                 >
-                                    <p>{{donor.user.location.addres}}</p>
+                                    <p>{{donor.user.location.address}}</p>
                                 </td>
 
                                 <td class="p-3 text-left ">
