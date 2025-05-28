@@ -11,9 +11,6 @@ import { computed } from 'vue';
 const props = defineProps({
     bloodStock: Array,
     bloodData: Object,
-    regions: Array,
-    districts: Array,
-    wards: Array,
 })
 
 const params = route().params;
@@ -25,13 +22,7 @@ const form =useForm({
 
 });
 
-const filteredDistricts = computed(() => {
-    return props.districts.filter( district => district.region.name === form.region);
-});
 
-const filteredWards = computed(() => {
-    return props.wards.filter( ward => ward.district.name === form.district);
-});
 
 const search = () => {
     router.get(route("admin.inventory"), {
@@ -113,9 +104,8 @@ const { isSidebarOpen } = useSidebar()
                             class="block w-full rounded-md pr-3 pl-9 text-sm dark:text-slate-900 border-slate-300 outline-0 focus:ring-1 focus:ring-inset focus:ring-blue-400 focus:border-blue-400 placeholder:text-slate-400"
                         >
                             <option 
-                                v-for="region in regions" 
-                                :key="region.id"
-                                :value="region.name">{{region.name}}</option>
+                                value="" disabled selected>Filter by Region
+                            </option>
                             
                         </select>
                     
@@ -136,9 +126,9 @@ const { isSidebarOpen } = useSidebar()
                             class="block w-full rounded-md pr-3 pl-9 text-sm dark:text-slate-900 border-slate-300 outline-0 focus:ring-1 focus:ring-inset focus:ring-blue-400 focus:border-blue-400 placeholder:text-slate-400"
                         >
                             <option 
-                                v-for="district in filteredDistricts" 
-                                :key="district.id"
-                                :value="district.name">{{district.name}}
+                                value=""
+                            >
+                                disabled selected>Filter by District
                             </option>
                             
                         </select>
@@ -159,10 +149,7 @@ const { isSidebarOpen } = useSidebar()
                             placeholder="Filter by Wards"
                             class="block w-full rounded-md pr-3 pl-9 text-sm dark:text-slate-900 border-slate-300 outline-0 focus:ring-1 focus:ring-inset focus:ring-blue-400 focus:border-blue-400 placeholder:text-slate-400"
                         >
-                            <option 
-                                v-for="ward in filteredWards" 
-                                :key="ward.id"
-                                :value="ward.name">{{ward.name}}</option>
+                            <option value="">Filter by Wards</option>
                             
                         </select>
                     
@@ -271,7 +258,7 @@ const { isSidebarOpen } = useSidebar()
                 <tbody>
                     <tr v-for="blood in props.bloodData.data" :key="blood.id" class="border-b border-slate-200 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-600 dark:border-slate-600">
                         <td class="p-3">{{ blood.hospital.name }}</td>
-                        <td class="p-3 w-1/4">{{ blood.hospital.ward.name }}, {{ blood.hospital.ward.district.name }}, {{ blood.hospital.ward.district.region.name }}</td>
+                        <td class="p-3 w-1/4">{{ blood.hospital.location.address}}</td>
                         <td class="p-3 text-right">{{ blood.blood_type }}</td>
                         <td class="p-3 w-1/5 text-right">{{ blood.quantity }}</td>
                         <td class="py-3 px-5 w-1/5 text-right">

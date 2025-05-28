@@ -18,19 +18,22 @@ class EventFactory extends Factory
      */
     public function definition(): array
     {
-         // Fetch random region, district, and ward
-         $region = Region::inRandomOrder()->first();
-         $district = $region ? $region->districts()->inRandomOrder()->first() : null;
-         $ward = $district ? $district->wards()->inRandomOrder()->first() : null;
- 
+        // Simulated location structure matching your description
+        $location = [
+            'latitude' => fake()->latitude(),
+            'longitude' => fake()->longitude(),
+            'latitude' => fake()->latitude(), // Simulated altitude in meters
+            'address' => fake()->streetAddress(),
+            'district' => fake()->city(),
+            'region' => fake()->state(),
+        ];
+
         return [
             'title' => fake()->sentence(),
             'description' => fake()->paragraph(),
             'event_date' => fake()->dateTimeBetween('now', '+1 year')->format('Y-m-d'),
             'status' => fake()->randomElement(['pending', 'completed', 'cancelled']),
-            'region_id' => $region ? $region->id : null,
-            'district_id' => $district ? $district->id : null,
-            'ward_id' => $ward ? $ward->id : null,
+            'location' => $location,
             'created_by' => User::whereIn('role', ['admin', 'hospital', 'organization'])
                 ->inRandomOrder()
                 ->first()

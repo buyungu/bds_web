@@ -18,11 +18,11 @@ class BloodRequestFactory extends Factory
     public function definition(): array
     {
         return [
-            'recipient_id' => User::where('role', 'recipient')->inRandomOrder()->first()->id ?? User::factory()->create(['role' => 'recipient'])->id,
-            'hospital_id' => User::where('role', 'hospital')->inRandomOrder()->first()->id ?? User::factory()->create(['role' => 'hospital'])->id,
+            'recipient_id' => User::factory(),
+            'hospital_id' => User::factory(),
             'blood_type' => fake()->randomElement(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']),
-            'quantity' => fake()->numberBetween(1, 5),
-            'status' => fake()->randomElement(['pending', 'fulfilled', 'canceled']),
+            'quantity' => fake()->numberBetween(1, 5), // e.g. units of blood
+            'status' => fake()->randomElement(['pending', 'partially matched', 'matched', 'fulfilled', 'canceled']),
             'urgency' => fake()->randomElement(['emergence', 'high', 'medium', 'low']),
         ];
     }

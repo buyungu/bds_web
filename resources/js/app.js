@@ -4,6 +4,7 @@ import { createApp, h } from 'vue'
 import { createInertiaApp, Head, Link } from '@inertiajs/vue3'
 import { ZiggyVue } from "../../vendor/tightenco/ziggy"
 import Main from './Layouts/Main.vue';
+import VueGoogleMaps from '@fawmi/vue-google-maps'
 import { setThemeOnLoad } from './theme';
 
 createInertiaApp({
@@ -30,6 +31,12 @@ createInertiaApp({
     createApp({ render: () => h(App, props) })
       .use(plugin)
       .use(ZiggyVue)
+      .use(VueGoogleMaps, {
+        load: {
+          key: 'AIzaSyD75dUgw57R6h0jaxGcmwOamWBOinq2FXE',
+          libraries: "places",
+        },
+      })
       .component("Head", Head)
       .component("Link", Link)
       .mount(el)

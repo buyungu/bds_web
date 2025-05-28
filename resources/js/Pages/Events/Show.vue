@@ -93,7 +93,7 @@ const formatDate = (date) => new Date(date).toLocaleDateString();
                 <!-- Location -->
                 <div class="flex items-center mb-2 gap-2">
                     <i class="fa-solid fa-location-dot"></i>
-                    <p>Location: {{ event.ward.name }}, {{ event.ward.district.name }}, {{ event.ward.district.region.name }}</p>
+                    <p>Location: {{ event.location.address }}</p>
                 </div>
 
                 <!-- Email -->
@@ -196,7 +196,7 @@ const formatDate = (date) => new Date(date).toLocaleDateString();
                                 <td
                                     class="p-3 text-left"
                                 >
-                                    <p>{{ donor.user.ward?.name ?? 'unknown' }}, {{ donor.user.ward?.district?.name ?? 'unknown'}}, {{ donor.user.ward?.district?.region?.name ?? 'unknown' }}</p>
+                                    <p>{{donor.user.location.addres}}</p>
                                 </td>
 
                                 <td class="p-3 text-left ">

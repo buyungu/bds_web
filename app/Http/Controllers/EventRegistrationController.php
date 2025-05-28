@@ -37,8 +37,8 @@ class EventRegistrationController extends Controller
         $user = auth()->user();
 
         // Ensure the user is a donor
-        if ($user->role !== 'donor') {
-            return redirect()->back()->with('error', 'You must be a donor to register for an event.');
+        if ($user->role !== 'user') {
+            return redirect()->back()->with('error', 'You must be a user to register for an event.');
         }
 
         // Check if the donor is already registered for this event

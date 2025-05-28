@@ -31,7 +31,7 @@ class HospitalController extends Controller
                             ->count();
 
         // ✅ Registered Donors Count (Donors associated with this hospital)
-        $registeredDonors = User::where('role', 'donor')
+        $registeredDonors = User::where('role', 'user')
                             ->where('district_id', Auth::user()->district_id)
                             ->count();
 
@@ -53,10 +53,7 @@ class HospitalController extends Controller
          ->get();
 
         $bloodRequests = BloodRequest::where('hospital_id', $hospitalId)
-            ->with(['recipient:id,name,email,blood_type,avatar,ward_id',
-            'recipient.ward:id,name,district_id',
-            'recipient.ward.district:id,name,region_id',
-            'recipient.ward.district.region:id,name'
+            ->with(['recipient:id,name,email,blood_type,avatar'         
         ])->latest()->paginate(10);
 
         return inertia('Hospital/Requests', [
@@ -67,7 +64,7 @@ class HospitalController extends Controller
     public function donorDatabase()
     {
         // ✅ Registered Donors Count (Donors associated with this hospital)
-        $registeredDonors = User::where('role', 'donor')
+        $registeredDonors = User::where('role', 'user')
                             ->where('district_id', Auth::user()->district_id)
                             ->with('ward:id,name')
                             ->paginate(6);

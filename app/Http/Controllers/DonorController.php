@@ -14,20 +14,20 @@ class DonorController extends Controller
 {
     public function index()
     {
-        $regionId = Auth::user()->region_id;
+        $region = Auth::user()->location['region'];
         $bloodType = Auth::user()->blood_type;
         $donorId = Auth::user()->id;
 
         $activeRequests = BloodRequest::whereIn('status', ['pending','partially matched'])
             ->where('blood_type', $bloodType)
-            ->whereHas('hospital.ward.district.region', function ($query) use ($regionId){
-                $query->where('id', $regionId);
+            ->whereHas('hospital', function ($query) use ($region){
+                $query->where('location->region', $region);
             })->count();
 
         $totalDonations = DonorDonation::where('donor_id', $donorId)->count();
 
         $upcomingEvents = Event::where('status', 'pending')
-            ->where('region_id', $regionId)
+            ->where('location->region', $region)
             ->count();
 
         return inertia('Donor/Dashboard', [
@@ -39,16 +39,13 @@ class DonorController extends Controller
 
     public function donations()
     {
-        $regionId = Auth::user()->region_id;
+        $region = Auth::user()->location['region'];
         $bloodType = Auth::user()->blood_type;
         $donorId = Auth::user()->id;
         $donations = DonorDonation::where('donor_id', $donorId)
             ->with('recipient:id,name,email,avatar')
             ->with([
-                'hospital:id,name,email,ward_id',
-                'hospital.ward:id,name,district_id',
-                'hospital.ward.district:id,name,region_id',
-                'hospital.ward.district.region:id,name'
+                'hospital:id,name,email,location'
             ])->latest()->paginate(6);
 
         return inertia('Donor/Donations', [
@@ -74,20 +71,18 @@ class DonorController extends Controller
     }
     public function requests()
     {
-        $regionId = Auth::user()->region_id;
+        $region = Auth::user()->location['region'];
         $bloodType = Auth::user()->blood_type;
         $bloodRequests = BloodRequest::whereIn('status', ['pending','partially matched', 'matched'])
             ->where('blood_type', $bloodType)
-            ->whereHas('hospital.ward.district.region', function ($query) use ($regionId){
-                $query->where('id', $regionId);
+            ->whereHas('hospital', function ($query) use ($region) {
+                $query->where('location->region', $region);
             })
-            ->with('recipient:id,name,email,avatar')
+            ->with('recipient:id,name,email,avatar,location')
             ->with([
-                'hospital:id,name,email,ward_id',
-                'hospital.ward:id,name,district_id',
-                'hospital.ward.district:id,name,region_id',
-                'hospital.ward.district.region:id,name'
-            ])->paginate(6);
+                'hospital:id,name,email,location',
+            ])
+            ->paginate(6);
         return inertia('Donor/Requests', [
             'bloodRequests' => $bloodRequests,
             'status' => session('status'),
@@ -105,9 +100,3 @@ class DonorController extends Controller
 
 }
 
-// , [
-//     'upcomingEvents' => Event::whereDate('date', '>=', now())->get(),
-//     'bloodRequests' => BloodRequest::where('status', 'pending')
-//         ->where('blood_type', Auth::user()->blood_type)
-//         ->get(),
-// ]

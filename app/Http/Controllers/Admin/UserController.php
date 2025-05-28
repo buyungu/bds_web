@@ -40,9 +40,7 @@ class UserController extends Controller
             'password' => 'required|confirmed|min:3',
             'role' => 'required|in:donor,recipient,hospital,organization,admin',
             'blood_type' => 'nullable|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
-            'region_id' => 'nullable|exists:regions,id', // Validate region id exists in the regions table
-            'district_id' => 'nullable|exists:districts,id', // Validate district id exists in the districts table
-            'ward_id' => 'nullable|exists:wards,id', // Validate ward id exists in the wards table
+            'location' => 'nullable|array',
         ]);
 
         // Save avatar if it exists
@@ -71,17 +69,11 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        // Fetch all regions, districts, and wards from the database
-        $regions = Region::all();
-        $districts = District::all();
-        $wards = Ward::all();
+        
 
         return Inertia::render('Admin/Users/UserEdit', [
             "status" => session('status'),
             "user" => $user,
-            'regions' => $regions,
-            'districts' => $districts,
-            'wards' => $wards,
         ]);
     }
 
@@ -96,9 +88,7 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email' . $user->id,
             'role' => 'required|in:donor,recipient,hospital,organization,admin',
             'blood_type' => 'nullable|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
-            'region_id' => 'nullable|exists:regions,id', // Validate region id exists in the regions table
-            'district_id' => 'nullable|exists:districts,id', // Validate district id exists in the districts table
-            'ward_id' => 'nullable|exists:wards,id', // Validate ward id exists in the wards table
+           'location' => 'nullable|array',
         ]);
 
         // Save avatar if it exists

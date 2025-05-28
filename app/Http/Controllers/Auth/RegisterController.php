@@ -17,33 +17,26 @@ class RegisterController extends Controller
 {
     public function create()
     {
-        // Fetch all regions, districts, and wards from the database
-        $regions = Region::all();
-        $districts = District::all();
-        $wards = Ward::all();
+  
 
         // Pass the data to the Inertia view
-        return Inertia::render('Register', [
-            'regions' => $regions,
-            'districts' => $districts,
-            'wards' => $wards,
-        ]);
+        return Inertia::render('Register');
 
     }
 
     public function register(Request $request)
     {
+        // dd($request->all());
+        // Validate the request data
         $fields = $request->validate([
             'avatar' => ['file', 'nullable', 'max:3000'],
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|confirmed|min:3',
-            'role' => 'required|in:donor,recipient,hospital,organization,admin',
+            'role' => 'required|in:user,hospital,organization,admin',
             'blood_type' => 'nullable|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
-            'region_id' => 'nullable|exists:regions,id', // Validate region id exists in the regions table
-            'district_id' => 'nullable|exists:districts,id', // Validate district id exists in the districts table
-            'ward_id' => 'nullable|exists:wards,id', // Validate ward id exists in the wards table
-
+            'phone' => ['required', 'regex:/^(\+?[0-9]{10,15}|0[0-9]{9})$/'],
+            'location' => 'required|array',
         ]);
 
          // Save avatar if it exists

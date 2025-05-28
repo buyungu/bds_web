@@ -21,19 +21,16 @@ const menus = computed(() => {
       { name: "Reports", route: "admin.reports", icon: "fa-chart-line" },
       { name: "Manage Inventory", route: "admin.inventory", icon: "fa-warehouse" },
     ],
-    donor: [
+    user: [
       { name: "Dashboard", route: "donor.dashboard", icon: "fa-home" },
       { name: "My Donations", route: "donor.donations", icon: "fa-hand-holding-medical" },
       { name: "Events", route: "donor.events", icon: "fa-calendar-check" },
       { name: "Available Requests", route: "donor.requests", icon: "fa-tint" },
-      { name: "Profile Settings", route: "donor.profile", icon: "fa-user-gear" },
-    ],
-    recipient: [
-      { name: "Dashboard", route: "recipient.dashboard", icon: "fa-home" },
       { name: "Request Blood", route: "recipient.request", icon: "fa-plus-circle" },
       { name: "My Requests", route: "recipient.requests", icon: "fa-tint" },
       { name: "Find Donors", route: "recipient.find-donors", icon: "fa-search" },
-      { name: "Profile Settings", route: "recipient.profile", icon: "fa-user-gear" },
+      { name: "Profile Settings", route: "donor.profile", icon: "fa-user-gear" },
+
     ],
     hospital: [
       { name: "Dashboard", route: "hospital.dashboard", icon: "fa-home" },
@@ -73,7 +70,7 @@ const isActive = (routeName) => route().current(routeName);
     </div>
 
     <!-- Scrollable Menu -->
-    <div class="flex-1 overflow-y-auto px-4">
+<div class="flex-1 overflow-y-auto px-4 pb-8 scrollbar-hide">
       <h2 class="text-gray-400 mb-4 font-medium text-sm">MENU</h2>
       <nav>
         <ul class="space-y-2">

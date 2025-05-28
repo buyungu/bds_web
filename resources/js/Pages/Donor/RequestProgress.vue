@@ -52,7 +52,7 @@ import Sidebar from '../../Layouts/Sidebar.vue';
                         {{ bloodRequest.hospital?.email }}
                     </a>
                 </p>
-                <p class="text-slate-600 dark:text-slate-300"><strong>Location:</strong> {{ bloodRequest.hospital?.ward?.name }}, {{ bloodRequest.hospital?.ward?.district?.name }}, {{ bloodRequest.hospital?.ward?.district?.region?.name }}</p>
+                <p class="text-slate-600 dark:text-slate-300"><strong>Location:</strong> {{ bloodRequest.hospital?.location.address }}</p>
             </div>
         </div>
 

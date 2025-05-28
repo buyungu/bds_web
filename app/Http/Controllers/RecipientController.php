@@ -9,15 +9,13 @@ use Illuminate\Support\Facades\Auth;
 
 class RecipientController extends Controller
 {
-    public function index()
-    {
-        return inertia('Recipient/Dashboard');
-    }
 
     public function requestBlood()
     {
-        $regionId = Auth::user()->region_id;
-        $hospitals = User::where('role', 'hospital')->where('region_id', $regionId)->get();
+        $region = Auth::user()->location['region'];
+        $hospitals = User::where('role', 'hospital')
+            ->whereJsonContains('location->region', $region)
+            ->get();
 
         return inertia('Recipient/Request',[
             'hospitals' => $hospitals,
@@ -30,10 +28,7 @@ class RecipientController extends Controller
         $recipientId = Auth::user()->id;
         $bloodRequests = BloodRequest::where('recipient_id', $recipientId)
             ->with([
-                'hospital:id,name,email,avatar,ward_id',
-                'hospital.ward:id,name,district_id',
-                'hospital.ward.district:id,name,region_id',
-                'hospital.ward.district.region:id,name'
+                'hospital:id,name,email,avatar,location'          
             ])->latest()->paginate(6);
         return inertia('Recipient/Requests',[
             'bloodRequests' => $bloodRequests,

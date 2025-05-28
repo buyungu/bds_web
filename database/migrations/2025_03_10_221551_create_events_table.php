@@ -18,10 +18,8 @@ return new class extends Migration
             $table->text('email')->nullable();
             $table->text('image')->nullable();
             $table->enum('status', ['pending', 'completed', 'cancelled' ])->default('pending');
+            $table->json('location');
             $table->date('event_date');
-            $table->foreignId('region_id')->nullable()->constrained('regions')->onDelete('set null');
-            $table->foreignId('district_id')->nullable()->constrained('districts')->onDelete('set null');
-            $table->foreignId('ward_id')->nullable()->constrained('wards')->onDelete('set null');
             $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });

@@ -37,9 +37,7 @@ class AdminController extends Controller
 
     public function manageUsers() {
         return inertia('Admin/ManageUser', [
-            'regions' => Region::all(),
-            'districts' => District::all(),
-            'wards' => Ward::all(),
+            
             'users' => User::
                 filter(request(['search', 'role']))
                 ->paginate(10)
@@ -52,16 +50,10 @@ class AdminController extends Controller
 
     public function addUser() {
 
-        // Fetch all regions, districts, and wards from the database
-        $regions = Region::all();
-        $districts = District::all();
-        $wards = Ward::all();
+       
 
         return inertia('Admin/Users/AddUser', [
             'users' => User::paginate(10),
-            'regions' => $regions,
-            'districts' => $districts,
-            'wards' => $wards,
             'status' => session('status'),
             'success'=> session('success'),
         ]);
@@ -76,7 +68,7 @@ class AdminController extends Controller
     }
     public function events() {
         return Inertia::render('Admin/Events', [
-            'events' => Event::with('user:id,name')
+            'events' => Event::with('user:id,name,location')
                 ->filter(request(['search','user_id']))
                 ->latest()
                 ->paginate(6)
@@ -99,34 +91,19 @@ class AdminController extends Controller
         
         // Retrieve blood stock with hospital details including region, district, and ward
         $bloodData = BloodStock::with([
-            'hospital:id,name,ward_id', // Load hospital with ward_id
-            'hospital.ward:id,name,district_id', // Load ward with district_id
-            'hospital.ward.district:id,name,region_id', // Load district with region_id
-            'hospital.ward.district.region:id,name' // Load region
+            'hospital:id,name,location' // Load hospital with location
             ])
             ->filter(request(['search', 'region', 'district', 'ward', 'blood_type']))
             ->latest()
             ->paginate(10)
             ->withQueryString();
 
-        // Fetch all regions with districts and wards (for filters or dropdowns)
-        $regions = Region::all();
-        $districts = District::with('region:id,name')->get();
-        $wards = Ward::with('district:id,name')->get();
-
+       
         // Return data to the frontend via Inertia
         return inertia('Admin/Inventory', [
             'bloodStock' => $bloodStock,
             'bloodData' => $bloodData,
-            'regions' => $regions,
-            'districts' => $districts,
-            'wards' => $wards,
+       
         ]);
     }
 }
-
-// , [
-//     'usersCount' => User::count(),
-//     'eventsCount' => Event::count(),
-//     'pendingRequests' => BloodRequest::where('status', 'pending')->count(),
-// ]

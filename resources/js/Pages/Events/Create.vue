@@ -12,9 +12,7 @@ import { computed } from 'vue';
 
 const props = defineProps({ 
     status: String,
-    regions: Array,
-    districts: Array,
-    wards: Array,
+   
 });
 
 const form = useForm({
@@ -23,20 +21,10 @@ const form = useForm({
     event_date: null,
     email: null,
     image: null,
-    region_id: null,
-    district_id: null,
-    ward_id: null,
+    location: null,
 });
 
-// Filter districts based on the selected region
-const filteredDistricts = computed(() => {
-    return props.districts.filter(district => district.region_id === form.region_id);
-});
 
-// Filter wards based on the selected district
-const filteredWards = computed(() => {
-    return props.wards.filter(ward => ward.district_id === form.district_id)
-});
 
 // Method to handle form submission
 const submit = () => {
@@ -172,93 +160,31 @@ const { isSidebarOpen } = useSidebar()
                 
                 </div>
                 <div class="space-y-5">
-                    <!-- Region Select -->
-                    <div>
-                        <label for="region_id" class="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                            Region
-                        </label>
-                        <div class="relative mt-1 rounded-lg">
-                    <div class="pointer-event-non absolute inset-y-0 left-0 flex items-center pl-3">
-                        <span class="grid place-content-center text-sm text-slate-400">
-                            <i class="fa-solid fa-city"></i>
-                        </span>
-                    </div>
-                        <select
-                            id="region_id"
-                            name="region_id"
-                            v-model="form.region_id"
-                            :class="{
-                                'border-red-500 ring-1 ring-red-500': form.errors.region_id
-                            }"
-                        class="block w-full rounded-md pr-3 pl-9 text-sm dark:text-slate-900 border-slate-300 outline-0 focus:ring-1 focus:ring-inset focus:ring-blue-400 focus:border-blue-400 placeholder:text-slate-400"                        >
-                            <option value="" disabled selected>Select a Region</option>
-                            <option v-for="region in props.regions" :key="region.id" :value="region.id">
-                                {{ region.name }}
-                            </option>
-                        </select>
+                   <!-- Location Input -->
+                        <div>
+                            <label for="location" class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                                Location
+                            </label>
+                            <div class="relative mt-1 rounded-md">
+                                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                    <span class="grid place-content-center text-sm text-slate-400">
+                                        <i class="fa-solid fa-map-marker-alt"></i>
+                                    </span>
+                                </div>
+                                <GMapAutocomplete
+                                    @place_changed="setPlace"
+                                    id="location"
+                                    name="location"
+                                    v-model="form.location"
+                                    :class="{
+                                        'border-red-500 ring-1 ring-red-500': form.errors.location
+                                    }"
+                                    class="block w-full pl-9 rounded-md text-sm dark:text-slate-900 border-slate-300 outline-0 focus:ring-1 focus:ring-inset focus:ring-blue-400 focus:border-blue-400 placeholder:text-slate-400"
+                                >
+                                </GMapAutocomplete> 
+                            </div>
+                            <p v-if="form.errors.location" class="text-red-500 text-xs mt-2">{{ form.errors.location }}</p>
                         </div>
-                        <p v-if="form.errors.region_id" class="text-red-500 text-xs mt-2">{{ form.errors.region_id }}</p>
-                    </div>
-
-                    <!-- District Select -->
-                    <div>
-                        <label for="district_id" class="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                            District
-                        </label>
-                        <div class="relative mt-1 rounded-lg">
-                    <div class="pointer-event-non absolute inset-y-0 left-0 flex items-center pl-3">
-                        <span class="grid place-content-center text-sm text-slate-400">
-                            <i class="fa-solid fa-tree-city"></i>
-                        </span>
-                    </div>
-                        <select
-                            id="district_id"
-                            name="district_id"
-                            v-model="form.district_id"
-                            :class="{
-                                'border-red-500 ring-1 ring-red-500': form.errors.district_id
-                            }"
-                        class="block w-full rounded-md pr-3 pl-9 text-sm dark:text-slate-900 border-slate-300 outline-0 focus:ring-1 focus:ring-inset focus:ring-blue-400 focus:border-blue-400 placeholder:text-slate-400"
-                        :disabled="!form.region_id"
-                        >
-                            <option value="" disabled selected>Select a District</option>
-                            <option v-for="district in filteredDistricts" :key="district.id" :value="district.id">
-                                {{ district.name }}
-                            </option>
-                        </select>
-                        </div>
-                        <p v-if="form.errors.district_id" class="text-red-500 text-xs mt-2">{{ form.errors.district_id }}</p>
-                    </div>
-
-                    <!-- Ward Select -->
-                    <div>
-                        <label for="ward_id" class="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                            Ward
-                        </label>
-                        <div class="relative mt-1 rounded-lg">
-                    <div class="pointer-event-non absolute inset-y-0 left-0 flex items-center pl-3">
-                        <span class="grid place-content-center text-sm text-slate-400">
-                            <i class="fa-solid fa-arrow-right-to-city"></i>
-                        </span>
-                    </div>
-                        <select
-                            id="ward_id"
-                            name="ward_id"
-                            v-model="form.ward_id"
-                            :class="{
-                                'border-red-500 ring-1 ring-red-500': form.errors.ward_id
-                            }"
-                        class="block w-full rounded-md pr-3 pl-9 text-sm dark:text-slate-900 border-slate-300 outline-0 focus:ring-1 focus:ring-inset focus:ring-blue-400 focus:border-blue-400 placeholder:text-slate-400"
-                        :disabled="!form.district_id"
-                        >
-                            <option value="" disabled selected>Select a Ward</option>
-                            <option v-for="ward in filteredWards" :key="ward.id" :value="ward.id">
-                                {{ ward.name }}
-                            </option>
-                        </select>
-                        </div>
-                        <p v-if="form.errors.ward_id" class="text-red-500 text-xs mt-2">{{ form.errors.ward_id }}</p>
-                    </div>
 
                     
 

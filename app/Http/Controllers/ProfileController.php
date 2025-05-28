@@ -26,6 +26,7 @@ class ProfileController extends Controller
         $fields = $request->validate([
             'avatar' => ['file', 'nullable', 'max:3000'],
             'name' => ['required', 'max:255'],
+            'location' => ['nullable', 'array'],
             'email' => ['required', 'max:255', 'lowercase', 'email',
             Rule::unique(User::class)->ignore($request->user()->id)],
         ]);

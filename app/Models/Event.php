@@ -12,16 +12,10 @@ class Event extends Model
     /** @use HasFactory<\Database\Factories\EventFactory> */
     use HasFactory;
 
-    protected $fillable = [
-        'title',
-        'description',
-        'event_date',
-        'email',
-        'image',
-        'ward_id',
-        'district_id',
-        'region_id',
-        'created_by'
+    protected $guarded = [];
+
+    protected $casts = [
+        'location' => 'array',
     ];
 
     public function user(): BelongsTo
@@ -34,23 +28,6 @@ class Event extends Model
         return $this->hasMany(EventRegistration::class, 'event_id');
     }
 
-    // Event belongs to a Ward
-    public function ward()
-    {
-        return $this->belongsTo(Ward::class);
-    }
-
-    // Event has a District through Ward
-    public function district()
-    {
-        return $this->ward->district;
-    }
-
-    // Event has a Region through District
-    public function region()
-    {
-        return $this->district->region;
-    }
 
 
     // FILTERS
@@ -59,7 +36,10 @@ class Event extends Model
         if ($filters['search'] ?? false) {
             $query->where( function ($q) {
                 $q->where('title', 'like', '%' . request('search') . '%')
-                    ->orWhere('description', 'like', '%' . request('search') . '%');
+                    ->orWhere('description', 'like', '%' . request('search') . '%')
+                    ->orWhere('location->address', 'like', '%' . request('search') . '%')
+                    ->orWhere('location->district', 'like', '%' . request('search') . '%')
+                    ->orWhere('location->region', 'like', '%' . request('search') . '%');
             });
                 
         }

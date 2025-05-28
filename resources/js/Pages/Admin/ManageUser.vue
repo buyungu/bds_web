@@ -13,9 +13,7 @@ defineProps({
     users:Object,
     status: String,
     success: String,
-    regions: Array,
-    districts: Array,
-    wards: Array,
+    
 });
 
 const params = route().params;
@@ -81,8 +79,7 @@ const { isSidebarOpen } = useSidebar()
                         v-model="form.role"
                         class="block w-full rounded-md pr-3 pl-9 text-sm dark:text-slate-900 border-slate-300 outline-0 focus:ring-1 focus:ring-inset focus:ring-blue-400 focus:border-blue-400 placeholder:text-slate-400"
                     >
-                        <option value="donor">Donor</option>
-                        <option value="recipient">Recipient</option>
+                        <option value="user">User</option>
                         <option value="hospital">Hospital</option>
                         <option value="organization">Organization</option>
                         <option value="admin">Admin</option>

@@ -18,10 +18,9 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->foreignId('ward_id')->nullable()->constrained()->onDelete('set null');
-            $table->foreignId('district_id')->nullable()->constrained()->onDelete('set null');
-            $table->foreignId('region_id')->nullable()->constrained()->onDelete('set null');
-            $table->enum('role', ['donor', 'recipient', 'hospital', 'organization', 'admin']);
+           $table->string('phone');
+            $table->json('location');
+            $table->enum('role', ['user', 'hospital', 'admin', 'organization'])->default('user');
             $table->enum('blood_type', ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'])->nullable();
             $table->rememberToken();
             $table->timestamps();

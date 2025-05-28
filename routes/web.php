@@ -12,6 +12,7 @@ use App\Http\Controllers\BloodRequestController;
 use App\Http\Controllers\DonorController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\EventRegistrationController;
+use App\Http\Controllers\GuestController;
 use App\Http\Controllers\HospitalController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\ProfileController;
@@ -20,9 +21,7 @@ use App\Models\Event;
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
 
-Route::inertia('/', 'Home', [
-    'events' => Event::with('user:id,name')->where('status', 'pending')->latest()->paginate(6),
-])->name("home");
+Route::get('/',  [GuestController::class, 'index'])->name("home");
 
 Route::get('/events', [EventController::class, 'index'])->name("events");
 Route::get('/events/{event}', [EventController::class, 'show'])->name("events.show");
@@ -74,8 +73,7 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth','verified'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'index'])->middleware('role:admin')->name('admin.dashboard');
-    Route::get('/donor/dashboard', [DonorController::class, 'index'])->middleware('role:donor')->name('donor.dashboard');
-    Route::get('/recipient/dashboard', [RecipientController::class, 'index'])->middleware('role:recipient')->name('recipient.dashboard');
+    Route::get('/user/dashboard', [DonorController::class, 'index'])->middleware('role:user')->name('donor.dashboard');
     Route::get('/hospital/dashboard', [HospitalController::class, 'index'])->middleware('role:hospital')->name('hospital.dashboard');
     Route::get('/organization/dashboard', [OrganizationController::class, 'index'])->middleware('role:organization')->name('organization.dashboard');
     Route::resource('events', EventController::class)->except(['index', 'show', 'create']);
@@ -101,7 +99,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
 });
 
 // Donor Routes
-Route::middleware(['auth', 'verified', 'role:donor'])->group(function () {
+Route::middleware(['auth', 'verified', 'role:user'])->group(function () {
     Route::get('/donor/donations', [DonorController::class, 'donations'])->name('donor.donations');
     Route::get('/donor/events', [DonorController::class, 'events'])->name('donor.events');
     Route::get('/donor/requests', [DonorController::class, 'requests'])->name('donor.requests');
@@ -118,7 +116,7 @@ Route::get('/donor/request/{id}', [BloodRequestController::class, 'viewRequest']
 ->name('request.view');
 
 // Recipient Routes
-Route::middleware(['auth', 'verified', 'role:recipient'])->group(function () {
+Route::middleware(['auth', 'verified', 'role:user'])->group(function () {
     Route::get('/recipient/request-blood', [RecipientController::class, 'requestBlood'])->name('recipient.request');
     Route::get('/recipient/my-requests', [RecipientController::class, 'myRequests'])->name('recipient.requests');
     Route::get('/recipient/find-donors', [RecipientController::class, 'findDonors'])->name('recipient.find-donors');

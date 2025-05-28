@@ -38,16 +38,11 @@ class EventController extends Controller
      */
     public function create() {
 
-        // Fetch all regions, districts, and wards from the database
-        $regions = Region::all();
-        $districts = District::all();
-        $wards = Ward::all();
+       
 
         return Inertia::render('Events/Create', [
             'status' => session('status'),
-            'regions' => $regions,
-            'districts' => $districts,
-            'wards' => $wards,
+            
         ]);
     }
 
@@ -61,9 +56,7 @@ class EventController extends Controller
             'description' => 'nullable|string',
             'event_date' => 'required|date|after:today',
             'email' => 'nullable|email',
-            'region_id' => 'nullable|exists:regions,id',
-            'district_id' => 'nullable|exists:districts,id',
-            'ward_id' => 'nullable|exists:wards,id',
+           'location' => 'required|array',
             'image' => 'nullable|file|max:3072|mimes:jpeg,jpg,png,webp',
         ]);
 
@@ -82,22 +75,15 @@ class EventController extends Controller
      */
     public function show(Event $event): Response
     {
-        // Retrieve all donors registered for this event
-        $donors = EventRegistration::where('event_id', $event->id)
-            ->with(['user:id,name,email,blood_type,ward_id',
-            'user.ward:id,name,district_id',
-            'user.ward.district:id,name,region_id',
-            'user.ward.district.region:id,name',
-        ])
-        ->paginate(10);
+        // Retrieve all user registered for this event
+        $user = EventRegistration::where('event_id', $event->id)
+            ->with(['user:id,name,email,blood_type,location,avatar' ])
+            ->paginate(10);
 
         return Inertia::render('Events/Show', [
-            'event' => $event->load(['user:id,name,avatar',
-            'ward:id,name,district_id',
-            'ward.district:id,name,region_id',
-            'ward.district.region:id,name',
+            'event' => $event->load(['user:id,name,avatar,location',       
         ]),
-            'enrolledDonors' => $donors,
+            'enrolledUser' => $user,
             'canModify' => Auth::user() ? Auth::user()->can('modify', $event) : false,
             'error' => session('error'),
             'status' => session('status'),
@@ -109,17 +95,12 @@ class EventController extends Controller
      */
     public function edit(Event $event): Response
     {
-        // Fetch all regions, districts, and wards from the database
-        $regions = Region::all();
-        $districts = District::all();
-        $wards = Ward::all();
+        
 
         return Inertia::render('Events/Edit', [
             'event' => $event,
             'status' => session('status'),
-            'regions' => $regions,
-            'districts' => $districts,
-            'wards' => $wards,
+            
         ]);
     }
 
@@ -134,9 +115,7 @@ class EventController extends Controller
             'description' => 'nullable|string',
             'event_date' => 'required|date|after:today',
             'email' => 'nullable|email',
-            'region_id' => 'nullable|exists:regions,id',
-            'district_id' => 'nullable|exists:districts,id',
-            'ward_id' => 'nullable|exists:wards,id',
+           'location' => 'nullable|array',
             'image' => 'nullable|file|max:3072|mimes:jpeg,jpg,png,webp',
         ]);
 

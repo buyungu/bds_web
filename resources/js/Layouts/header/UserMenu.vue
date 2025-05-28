@@ -79,7 +79,7 @@
           { href: 'admin.dashboard', icon: 'house', text: 'Dashboard' },
           { href: 'admin.profile', icon: 'user', text: 'Profile Settings' },
         ],
-        donor: [
+        user: [
           { href: 'donor.dashboard', icon: 'house', text: 'Dashboard' },
           { href: 'donor.profile', icon: 'user', text: 'Profile Settings' },
         ],

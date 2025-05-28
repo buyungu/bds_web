@@ -82,7 +82,7 @@ const { isSidebarOpen } = useSidebar()
                                 <td
                                     class="p-3 w-2/6 text-left"
                                 >
-                                    <p>{{ donation.hospital.ward?.name ?? '' }}, {{ donation.hospital.ward?.district?.name ?? ''}}, {{ donation.hospital.ward?.district?.region?.name ?? '' }}</p>
+                                <p>{{ donation.hospital.location.address }}</p>
                                 </td>
                                 <td
                                     class="py-3 pl-6 w-1/6 text-left "

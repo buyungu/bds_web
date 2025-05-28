@@ -56,13 +56,7 @@ class BloodRequestController extends Controller
         $donor = Auth::user();
         $bloodRequest = BloodRequest::findOrFail($bloodRequestId);
 
-        // dd([
-        //     'auth_user_id' => Auth::id(),
-        //     'auth_user' => Auth::user(),
-        //     'donor_id_in_attach' => $donor->id,
-        //     'blood_request_id' => $bloodRequest->id,
-        // ]);
-        
+
     
         // ✅ Ensure donor has not already donated for this request
         if ($bloodRequest->donors()->wherePivot('donor_id', $donor->id)->exists()) {
@@ -148,10 +142,7 @@ class BloodRequestController extends Controller
     {
         $request = BloodRequest::with([
             'recipient:id,name,email,blood_type',
-            'hospital:id,name,email,ward_id',
-            'hospital.ward:id,name,district_id',
-            'hospital.ward.district:id,name,region_id',
-            'hospital.ward.district.region:id,name',
+            'hospital:id,name,email,location',
             'donors:id,name,email'
         ])->findOrFail($id);
 

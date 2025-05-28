@@ -18,18 +18,12 @@ class User extends Authenticatable implements MustVerifyEmail
      *
      * @var list<string>
      */
-    protected $fillable = [
-        'avatar',
-        'name',
-        'email',
-        'password',
-        'blood_type',
-        'role',
-        'ward_id',
-        'district_id',
-        'region_id',
-    ];
+    protected $guarded = [];
 
+
+    protected $casts = [
+        'location' => 'array',
+    ];
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -80,23 +74,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(EventRegistration::class, 'user_id');
     }
 
-    // Relationship: A User belongs to a Ward
-    public function ward()
-    {
-        return $this->belongsTo(Ward::class);
-    }
-
-    // Relationship: A User has a District through Ward
-    public function district()
-    {
-        return $this->ward->district; // User has a District through Ward
-    }
-
-    // Relationship: A User has a Region through District
-    public function region()
-    {
-        return $this->district->region; // User has a Region through District
-    } 
+     
 
     public function donatedRequests()
     {

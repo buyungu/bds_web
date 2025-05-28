@@ -17,12 +17,14 @@ class BloodInventoryFactory extends Factory
      */
     public function definition(): array
     {
+        $expiry = fake()->optional()->dateTimeBetween('now', '+30 days');
+
         return [
-            'hospital_id' => User::where('role', 'hospital')->inRandomOrder()->first()->id ?? User::factory()->create(['role' => 'hospital'])->id,
+            'hospital_id' => User::factory(), // or inject real hospital user ID
             'blood_type' => fake()->randomElement(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']),
-            'quantity' => fake()->numberBetween(10, 100),
-            'expiry_date' => now()->addDays(fake()->numberBetween(1, 365)),
+            'quantity' => fake()->numberBetween(1, 10),
             'source' => fake()->randomElement(['donation', 'purchase']),
+            'expiry_date' => $expiry ? $expiry->format('Y-m-d') : null,
         ];
     }
 }

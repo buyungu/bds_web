@@ -19,7 +19,7 @@ class EventRegistrationFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::where('role', 'donor')->inRandomOrder()->first()->id,
+            'user_id' => User::where('role', 'user')->inRandomOrder()->first()->id,
             'event_id' => Event::inRandomOrder()->first()->id,
             'status' => fake()->randomElement(['pending', 'confirmed', 'canceled']),
             'registered_at' => now(),
