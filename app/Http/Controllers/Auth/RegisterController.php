@@ -36,7 +36,7 @@ class RegisterController extends Controller
             'role' => 'required|in:user,hospital,organization,admin',
             'blood_type' => 'nullable|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
             'phone' => ['required', 'regex:/^(\+?[0-9]{10,15}|0[0-9]{9})$/'],
-            'location' => 'required|array',
+            'location' => 'required',
         ]);
 
          // Save avatar if it exists

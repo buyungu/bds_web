@@ -48,7 +48,7 @@ const show = ref(false);
         <slot/>
     </main>
 
-    <!-- Footer 
+    Footer 
     <footer class="bg-gray-800 text-white py-4">
         <div class="container mx-auto px-6 text-center">
             <p class="mb-4">&copy; {{ new Date().getFullYear() }} Blood Donation System. All rights reserved.</p>
@@ -63,7 +63,7 @@ const show = ref(false);
                 <a href="#" class="px-2 hover:text-white">Contact</a>
             </div>
         </div>
-    </footer> -->
+    </footer>
 </div>
 </template>
 

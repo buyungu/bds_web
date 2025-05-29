@@ -15,10 +15,17 @@
         password: "",
         password_confirmation: "",
         phone: "",
-        location: "",
+        location: null, // This is the location field used for the GMapAutocomplete input
         avatar: null,
         preview: null,
     });
+
+    // Make sure to import and register GMapAutocomplete if not already done
+    // import GMapAutocomplete from 'path-to-gmap-autocomplete-component';
+    // defineComponent({ components: { GMapAutocomplete } });
+
+    // Update setLocation to update form.location directly
+    // Removed duplicate setLocation declaration to fix redeclaration error
 
     const change = (e) => {
         form.avatar = e.target.files[0];
@@ -31,8 +38,18 @@
         });
     };
 
-    const setPlace = (place) => {
-        console.log('setPlace', place);
+    const setLocation = (e) => {
+        console.log('setLocation', e)
+        form.location = {
+            lat: e.geometry.location.lat(),
+            lng: e.geometry.location.lng(),
+            address: e.formatted_address,
+            name: e.name,
+            url: e.url,
+            district: e.address_components.find(c => c.types.includes('administrative_area_level_2'))?.long_name || '',
+            region: e.address_components.find(c => c.types.includes('administrative_area_level_1'))?.long_name || '',
+            country: e.address_components.find(c => c.types.includes('country'))?.long_name || '',
+        };
     }
 </script>
 
@@ -154,7 +171,7 @@
                         </span>
                     </div>
                     <GMapAutocomplete
-                        @place_changed="setPlace"
+                        @place_changed="setLocation"
                         id="location"
                         name="location"
                         v-model="form.location"

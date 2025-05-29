@@ -26,6 +26,20 @@ const form = useForm({
     _method: 'PUT',
 });
 
+const setLocation = (e) => {
+        console.log('setLocation', e)
+        form.location = {
+            lat: e.geometry.location.lat(),
+            lng: e.geometry.location.lng(),
+            address: e.formatted_address,
+            name: e.name,
+            url: e.url,
+            district: e.address_components.find(c => c.types.includes('administrative_area_level_2'))?.long_name || '',
+            region: e.address_components.find(c => c.types.includes('administrative_area_level_1'))?.long_name || '',
+            country: e.address_components.find(c => c.types.includes('country'))?.long_name || '',
+        };
+    }
+
 
 // Method to handle form submission
 const submit = (id) => {
@@ -107,32 +121,7 @@ const { isSidebarOpen } = useSidebar()
                     <p v-if="form.errors.event_date" class="text-red-500 text-sm font-medium mt-2">{{ form.errors.event_date }}</p>
                 </div>
 
-                <div>
-                        <label for="email" class="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                            Email
-                        </label>
-                        <div class="relative mt-1 rounded-md">
-                            <div class="pointer-event-non absolute inset-y-0 left-0 flex items-center pl-3">
-                                <span class="grid place-content-center text-sm text-slate-400">
-                                    <i class="fa-solid fa-at"></i>
-                                </span>
-                            </div>
-                            <input
-                                type="text"
-                                id="email"
-                                name="email"
-                                placeholder="New Event"
-                                v-model="form.email"
-                                :class="{
-                                    'border-red-500 ring-1 ring-red-500': form.errors.email
-                                }"
-                                class="block w-full pl-9 rounded-md text-sm dark:text-slate-900 border-slate-300 outline-0 focus:ring-1 focus:ring-inset focus:ring-blue-400 focus:border-blue-400 placeholder:text-slate-400"
-                            />
-                        </div>
-                        <!-- Displaying error for email -->
-                        <p v-if="form.errors.email" class="text-red-500 text-sm font-medium mt-2">{{ form.errors.email }}</p>
-                    </div>
-
+                
                 <!-- Password Input -->
                 <div>
                     <label for="description" class="block text-sm font-medium text-slate-700 dark:text-slate-300">
@@ -187,6 +176,32 @@ const { isSidebarOpen } = useSidebar()
                             </div>
                             <p v-if="form.errors.location" class="text-red-500 text-xs mt-2">{{ form.errors.location }}</p>
                         </div>
+
+                        <div>
+                        <label for="email" class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                            Email
+                        </label>
+                        <div class="relative mt-1 rounded-md">
+                            <div class="pointer-event-non absolute inset-y-0 left-0 flex items-center pl-3">
+                                <span class="grid place-content-center text-sm text-slate-400">
+                                    <i class="fa-solid fa-at"></i>
+                                </span>
+                            </div>
+                            <input
+                                type="text"
+                                id="email"
+                                name="email"
+                                placeholder="New Event"
+                                v-model="form.email"
+                                :class="{
+                                    'border-red-500 ring-1 ring-red-500': form.errors.email
+                                }"
+                                class="block w-full pl-9 rounded-md text-sm dark:text-slate-900 border-slate-300 outline-0 focus:ring-1 focus:ring-inset focus:ring-blue-400 focus:border-blue-400 placeholder:text-slate-400"
+                            />
+                        </div>
+                        <!-- Displaying error for email -->
+                        <p v-if="form.errors.email" class="text-red-500 text-sm font-medium mt-2">{{ form.errors.email }}</p>
+                    </div>
 
                     
 

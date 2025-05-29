@@ -40,6 +40,7 @@ class UserController extends Controller
             'password' => 'required|confirmed|min:3',
             'role' => 'required|in:donor,recipient,hospital,organization,admin',
             'blood_type' => 'nullable|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
+            'phone' => ['required', 'regex:/^(\+?[0-9]{10,15}|0[0-9]{9})$/'],
             'location' => 'nullable|array',
         ]);
 
@@ -88,6 +89,7 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email' . $user->id,
             'role' => 'required|in:donor,recipient,hospital,organization,admin',
             'blood_type' => 'nullable|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
+            'phone' => ['required', 'regex:/^(\+?[0-9]{10,15}|0[0-9]{9})$/'],
            'location' => 'nullable|array',
         ]);
 

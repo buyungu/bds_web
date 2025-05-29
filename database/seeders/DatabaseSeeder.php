@@ -33,7 +33,6 @@ class DatabaseSeeder extends Seeder
             'location' => [
                 'latitude' => -6.7924,
                 'longitude' => 39.2083,
-                'altitude' => 50.3,
                 'location_name' => 'Posta, City Center',
                 'district' => 'Ilala',
                 'region' => 'Dar es Salaam',

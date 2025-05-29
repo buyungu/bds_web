@@ -30,10 +30,10 @@ class LoginController extends Controller
 
             // Redirect based on role using URL paths instead of named routes
             return match ($user->role) {
-                'admin' => redirect()->intended('/admin/dashboard'),
-                'user' => redirect()->intended('/donor/dashboard'),
-                'hospital' => redirect()->intended('/hospital/dashboard'),
-                'organization' => redirect()->intended('/organization/dashboard'),
+                'admin' => redirect()->route('admin.dashboard'),
+                'user' => redirect()->route('donor.dashboard'),
+                'hospital' => redirect()->route('hospital.dashboard'),
+                'organization' => redirect()->route('organization.dashboard'),
                 default => redirect('/'),
             };
         }

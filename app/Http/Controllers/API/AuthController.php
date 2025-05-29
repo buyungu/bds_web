@@ -32,9 +32,13 @@ class AuthController extends Controller
 
         event(new Registered($user));
 
+        $token = $user->createToken('api-token')->plainTextToken;
+
+
         return response()->json([
             'message' => 'Registration successful.',
             'user' => $user,
+            'token' => $token,
         ], 201);
     }
 

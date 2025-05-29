@@ -17,12 +17,14 @@ class UserFactory extends Factory
     {
         // Simulated location structure matching your description
         $location = [
-            'latitude' => fake()->latitude(),
-            'longitude' => fake()->longitude(),
-            'latitude' => fake()->latitude(), // Simulated altitude in meters
-            'address' => fake()->streetAddress(),
-            'district' => fake()->city(),
-            'region' => fake()->state(),
+            'lat' => fake()->latitude(-7, -6), // Example: around Dar es Salaam
+            'lng' => fake()->longitude(39, 40),
+            'address' => 'Mataa shungashunga, Dar es Salaam 16103, Tanzania',
+            'name' => 'TonCheers Web Designer',
+            'url' => 'https://maps.google.com/?cid=13159152526387155134',
+            'district' => 'Kinondoni',
+            'region' => 'Dar es Salam',
+            'country' => 'Tanzania',
         ];
 
         return [

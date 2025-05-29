@@ -32,7 +32,7 @@ class HospitalController extends Controller
 
         // ✅ Registered Donors Count (Donors associated with this hospital)
         $registeredDonors = User::where('role', 'user')
-                            ->where('district_id', Auth::user()->district_id)
+                            ->where('location->district', Auth::user()->location["district"])
                             ->count();
 
         return inertia('Hospital/Dashboard',[
@@ -65,8 +65,7 @@ class HospitalController extends Controller
     {
         // ✅ Registered Donors Count (Donors associated with this hospital)
         $registeredDonors = User::where('role', 'user')
-                            ->where('district_id', Auth::user()->district_id)
-                            ->with('ward:id,name')
+                            ->where('location->district', Auth::user()->location["district"])
                             ->paginate(6);
 
         return inertia('Hospital/Donors',[

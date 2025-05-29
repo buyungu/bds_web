@@ -18,11 +18,11 @@
         role: "",
         password: "",
         password_confirmation: "",
-        location: "",
+        phone: "",
+        location: null, // This is the location field used for the GMapAutocomplete input
         avatar: null,
         preview: null,
     });
-
     const change = (e) => {
         form.avatar = e.target.files[0];
         form.preview = URL.createObjectURL(e.target.files[0]);
@@ -37,6 +37,19 @@
         });
     };
 
+    const setLocation = (e) => {
+        console.log('setLocation', e)
+        form.location = {
+            lat: e.geometry.location.lat(),
+            lng: e.geometry.location.lng(),
+            address: e.formatted_address,
+            name: e.name,
+            url: e.url,
+            district: e.address_components.find(c => c.types.includes('administrative_area_level_2'))?.long_name || '',
+            region: e.address_components.find(c => c.types.includes('administrative_area_level_1'))?.long_name || '',
+            country: e.address_components.find(c => c.types.includes('country'))?.long_name || '',
+        };
+    }
     
 </script>
 
@@ -120,6 +133,30 @@
                 <p v-if="form.errors.email" class="text-red-500  mt-2 text-sm font-medium">{{ form.errors.email }}</p>
 
             </div>
+            <!-- Phone Input -->
+            <div>
+                <label for="phone" class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                    Phone
+                </label>
+                <div class="relative mt-1 rounded-md">
+                    <div class="pointer-event-non absolute inset-y-0 left-0 flex items-center pl-3">
+                        <span class="grid place-content-center text-sm text-slate-400">
+                            <i class="fa-solid fa-phone"></i>
+                        </span>
+                    </div>
+                    <input
+                        type="text"
+                        id="phone"
+                        name="phone"
+                        v-model="form.phone"
+                        :class="{
+                            'border-red-500 ring-1 ring-red-500': form.errors.phone
+                        }"
+                        class="block w-full pl-9 rounded-md text-sm dark:text-slate-900 border-slate-300 outline-0 focus:ring-1 focus:ring-inset focus:ring-blue-400 focus:border-blue-400 placeholder:text-slate-400"
+                    />
+                </div>
+                <p v-if="form.errors.phone" class="text-red-500 text-xs mt-2">{{ form.errors.phone }}</p>
+            </div>
 
             <!-- Location Input -->
             <div>
@@ -133,7 +170,7 @@
                         </span>
                     </div>
                     <GMapAutocomplete
-                        @place_changed="setPlace"
+                        @place_changed="setLocation"
                         id="location"
                         name="location"
                         v-model="form.location"

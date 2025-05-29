@@ -71,7 +71,7 @@ Route::middleware('auth')->group(function () {
 });
 
 
-Route::middleware(['auth','verified'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'index'])->middleware('role:admin')->name('admin.dashboard');
     Route::get('/user/dashboard', [DonorController::class, 'index'])->middleware('role:user')->name('donor.dashboard');
     Route::get('/hospital/dashboard', [HospitalController::class, 'index'])->middleware('role:hospital')->name('hospital.dashboard');
@@ -87,7 +87,7 @@ Route::middleware(['auth','verified'])->group(function () {
 
 // Adding Missing Routes
 
-Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
+Route::middleware(['auth', 'role:admin'])->group(function () {
     // Admin specific routes
     Route::get('/admin/manage-users', [AdminController::class, 'manageUsers'])->name('admin.users');
     Route::get('/admin/add-users', [AdminController::class, 'addUser'])->name('admin.addusers');
@@ -99,7 +99,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
 });
 
 // Donor Routes
-Route::middleware(['auth', 'verified', 'role:user'])->group(function () {
+Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/donor/donations', [DonorController::class, 'donations'])->name('donor.donations');
     Route::get('/donor/events', [DonorController::class, 'events'])->name('donor.events');
     Route::get('/donor/requests', [DonorController::class, 'requests'])->name('donor.requests');
@@ -116,7 +116,7 @@ Route::get('/donor/request/{id}', [BloodRequestController::class, 'viewRequest']
 ->name('request.view');
 
 // Recipient Routes
-Route::middleware(['auth', 'verified', 'role:user'])->group(function () {
+Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/recipient/request-blood', [RecipientController::class, 'requestBlood'])->name('recipient.request');
     Route::get('/recipient/my-requests', [RecipientController::class, 'myRequests'])->name('recipient.requests');
     Route::get('/recipient/find-donors', [RecipientController::class, 'findDonors'])->name('recipient.find-donors');
@@ -124,7 +124,7 @@ Route::middleware(['auth', 'verified', 'role:user'])->group(function () {
 });
 
 // Hospital routes
-Route::middleware(['auth', 'verified', 'role:hospital'])->group(function () {
+Route::middleware(['auth', 'role:hospital'])->group(function () {
     Route::get('/hospital/manage-requests', [HospitalController::class, 'manageRequests'])->name('hospital.requests');
     Route::get('/hospital/donor-database', [HospitalController::class, 'donorDatabase'])->name('hospital.donors');
     Route::get('/hospital/inventory', [HospitalController::class, 'inventory'])->name('hospital.inventory');
@@ -139,7 +139,7 @@ Route::middleware(['auth', 'verified', 'role:hospital'])->group(function () {
 });
 
 // Organization Routes
-Route::middleware(['auth', 'verified', 'role:organization'])->group(function () {
+Route::middleware(['auth', 'role:organization'])->group(function () {
     Route::get('/organization/events', [OrganizationController::class, 'events'])->name('organization.events');
     Route::get('/organization/dashboard', [OrganizationController::class, 'index'])->name('organization.dashboard');
     Route::get('/organization/reports', [OrganizationController::class, 'reports'])->name('organization.reports');
