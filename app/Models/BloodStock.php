@@ -33,21 +33,16 @@ class BloodStock extends Model
         }
 
         if (!empty($filters['region'])) {
-            $query->whereHas('hospital.ward.district.region', function ($q) use ($filters) {
-                $q->where('name', $filters['region']);
+            $query->whereHas('hospital', function ($q) use ($filters) {
+                $q->where('location->region', $filters['region']);
             });
         }
 
         if (!empty($filters['district'])) {
-            $query->whereHas('hospital.ward.district', function ($q) use ($filters) {
-                $q->where('name', $filters['district']);
+            $query->whereHas('hospital', function ($q) use ($filters) {
+                $q->where('location->district', $filters['district']);
             });
         }
 
-        if (!empty($filters['ward'])) {
-            $query->whereHas('hospital.ward', function ($q) use ($filters) {
-                $q->where('name', $filters['ward']);
-            });
-        }
     }
 }

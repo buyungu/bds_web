@@ -12,7 +12,7 @@ const show = ref(false);
 </script>
 
 <template>
-    <div class=" flex flex-col">
+    <div class="h-full min-h-screen flex flex-col">
     <!-- Oerlay -->
      <div v-show="show" @click="show = false" class="fixed inset-0 z-40"></div>
     <div class=" bg-slate-800 text-white">
@@ -44,11 +44,11 @@ const show = ref(false);
         </nav>
     </div>
 
-    <main class="mx-auto p-4">
+    <main class="mx-auto flex-grow max-w-screen-lg p-4">
         <slot/>
     </main>
 
-    Footer 
+    <!-- Footer  -->
     <footer class="bg-gray-800 text-white py-4">
         <div class="container mx-auto px-6 text-center">
             <p class="mb-4">&copy; {{ new Date().getFullYear() }} Blood Donation System. All rights reserved.</p>

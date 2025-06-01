@@ -22,22 +22,22 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Create 20 demo users
-        $users = User::factory()->count(20)->create();
+        $users = User::factory()->count(5)->create();
 
-        // Optionally: Create one admin with known credentials
-        User::factory()->create([
-            'name' => 'Daud Benjamini',
-            'email' => 'daudbuyungu@gmail.com',
-            'password' => bcrypt('1234'),
-            'role' => 'admin',
-            'location' => [
-                'latitude' => -6.7924,
-                'longitude' => 39.2083,
-                'location_name' => 'Posta, City Center',
-                'district' => 'Ilala',
-                'region' => 'Dar es Salaam',
-            ],
-        ]);
+        // // Optionally: Create one admin with known credentials
+        // User::factory()->create([
+        //     'name' => 'Daud Benjamini',
+        //     'email' => 'daudbuyungu@gmail.com',
+        //     'password' => bcrypt('1234'),
+        //     'role' => 'admin',
+        //     'location' => [
+        //         'latitude' => -6.7924,
+        //         'longitude' => 39.2083,
+        //         'location_name' => 'Posta, City Center',
+        //         'district' => 'Ilala',
+        //         'region' => 'Dar es Salaam',
+        //     ],
+        // ]);
 
         // Create 20 events, randomly linked to those users
         Event::factory()->count(20)->make()->each(function ($event) use ($users) {

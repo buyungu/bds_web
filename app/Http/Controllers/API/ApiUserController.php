@@ -22,6 +22,7 @@ class ApiUserController extends Controller
 
         $upcomingEvents = Event::where('status', 'pending')
             ->where('location->region', $region)
+            ->with('user:id,name,email,phone')
             ->get();
 
         return response()->json([

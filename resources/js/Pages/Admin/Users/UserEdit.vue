@@ -276,7 +276,6 @@ import { useSidebar } from '../../../composables/useSidebar';
 
             
 
-            <SessionMessage :status="status" v-if="form.recentlySuccessful" class="w-full"/>
 
 
             <PrimaryBtn :disabled="form.processing">Update User</PrimaryBtn>

@@ -32,6 +32,7 @@ class RecipientController extends Controller
             ])->latest()->paginate(6);
         return inertia('Recipient/Requests',[
             'bloodRequests' => $bloodRequests,
+            'status' => session('status'),
         ]);
     }
     public function findDonors()

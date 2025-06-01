@@ -4,9 +4,11 @@ import DemoHeader from '../../Layouts/DemoHeader.vue';
 import Sidebar from '../../Layouts/Sidebar.vue';
 import PaginationLinks from '../../Components/PaginationLinks.vue'
 import Card from '../../Components/Card.vue';
+import SessionMessage from '../../Components/SessionMessage.vue';
 
 const props = defineProps({
     bloodRequests: Object,
+    status: String,
 })
 
 const { isSidebarOpen } = useSidebar()
@@ -24,6 +26,7 @@ const { isSidebarOpen } = useSidebar()
         <div v-if="props.bloodRequests.data.length">
                 <div class="mb-6">
 
+                    <SessionMessage :status="status" />
 
                     <!-- Table -->
                     <table

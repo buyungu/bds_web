@@ -49,7 +49,7 @@ class BloodRequestController extends Controller
         
         $bloodRequest->save();
 
-        return back()->with('status', "Your Blood request has been added successful");
+        return redirect()->route('recipient.requests')->with('status', "Your Blood request has been added successful");
     }
     public function donate(Request $request, $bloodRequestId)
     {

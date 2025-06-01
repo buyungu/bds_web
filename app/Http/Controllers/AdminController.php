@@ -86,24 +86,40 @@ class AdminController extends Controller
         // Aggregate Blood Stock Data
         $bloodStock = BloodStock::select('blood_type', DB::raw('SUM(quantity) as total_quantity'))
             ->groupBy('blood_type')
-            ->filter(request(['search', 'region', 'district', 'ward', 'blood_type']))
+            ->filter(request(['search', 'region', 'district', 'blood_type']))
             ->get();
         
         // Retrieve blood stock with hospital details including region, district, and ward
         $bloodData = BloodStock::with([
             'hospital:id,name,location' // Load hospital with location
             ])
-            ->filter(request(['search', 'region', 'district', 'ward', 'blood_type']))
+            ->filter(request(['search', 'region', 'district', 'blood_type']))
             ->latest()
             ->paginate(10)
             ->withQueryString();
+
+
+        // Group users by region and collect distinct districts per region
+        $regionsWithDistricts = \App\Models\User::whereNotNull('location')
+            ->where('role', 'hospital')
+            ->get()
+            ->groupBy(fn ($user) => $user->location['region']) // no json_decode here
+            ->map(function ($group) {
+                return collect($group)
+                    ->pluck('location')
+                    ->map(fn ($loc) => $loc['district'] ?? null) // no json_decode here
+                    ->filter()
+                    ->unique()
+                    ->values();
+            });
 
        
         // Return data to the frontend via Inertia
         return inertia('Admin/Inventory', [
             'bloodStock' => $bloodStock,
             'bloodData' => $bloodData,
-       
+            'regions' => $regionsWithDistricts->keys()->values(), // list of regions
+            'regionsWithDistricts' => $regionsWithDistricts,       // mapping
         ]);
     }
 }

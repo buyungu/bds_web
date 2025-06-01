@@ -5,7 +5,7 @@ import Container from '../../Components/Container.vue';
 import Title from '../../Components/Title.vue';
 import PrimaryBtn from '../../Components/PrimaryBtn.vue';
 import ImageUpload from '../../Components/ImageUpload.vue';
-import SessiomMessage from '../../Components/SessionMessage.vue';
+import SessionMessage from '../../Components/SessionMessage.vue';
 import DemoHeader from '../../Layouts/DemoHeader.vue';
 import Sidebar from '../../Layouts/Sidebar.vue';
 import { computed } from 'vue';
@@ -22,7 +22,7 @@ const form = useForm({
     event_date: props.event.event_date,
     email: props.event.email,
     image: null,
-    location: props.event.location.address,
+    location: props.event.location,
     _method: 'PUT',
 });
 
@@ -66,7 +66,7 @@ const { isSidebarOpen } = useSidebar()
             <Title>Edit Your Event</Title>
         </div>
         <form @submit.prevent="submit(event.id)" >
-            <SessiomMessage :status="status" v-if="form.recentlySuccessful"/>
+            <SessionMessage :status="status" v-if="form.recentlySuccessful" class="w-full"/>
 
             <div class="grid grid-cols-2 gap-6">
                 <!-- Title Input -->

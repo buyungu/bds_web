@@ -307,7 +307,6 @@
 </div>
 </div>
 
-            <SessionMessage :status="status" v-if="form.recentlySuccessful" class="w-full"/>
 
 
             <PrimaryBtn :disabled="form.processing">Add User</PrimaryBtn>

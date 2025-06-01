@@ -22,8 +22,8 @@ class UserFactory extends Factory
             'address' => 'Mataa shungashunga, Dar es Salaam 16103, Tanzania',
             'name' => 'TonCheers Web Designer',
             'url' => 'https://maps.google.com/?cid=13159152526387155134',
-            'district' => 'Kinondoni',
-            'region' => 'Dar es Salam',
+            'district' => 'Nyamagana',
+            'region' => 'Mwanza',
             'country' => 'Tanzania',
         ];
 
@@ -34,7 +34,7 @@ class UserFactory extends Factory
             'password' => static::$password ??= Hash::make('1234'),
             'phone' => fake()->phoneNumber(),
             'location' => $location,
-            'role' => fake()->randomElement(['user', 'hospital', 'organization', 'admin']),
+            'role' => fake()->randomElement(['user', 'hospital',]),
             'blood_type' => fake()->randomElement(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']),
             'remember_token' => Str::random(10),
         ];

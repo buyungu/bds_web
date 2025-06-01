@@ -6,11 +6,13 @@ import InputField from '../../Components/InputField.vue';
 import PaginationLinks from '../../Components/PaginationLinks.vue';
 import DemoHeader from '../../Layouts/DemoHeader.vue';
 import Sidebar from '../../Layouts/Sidebar.vue';
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 const props = defineProps({
     bloodStock: Array,
     bloodData: Object,
+    regions: Array,
+    regionsWithDistricts: Object, // ✅ Add this
 })
 
 const params = route().params;
@@ -18,30 +20,36 @@ const form =useForm({
     search: params.search,
     region: params.region,
     district: params.district,
-    ward: params.ward,
 
 });
 
+const districts = ref([])
 
+// Populate districts if region is preselected (e.g. from URL)
+if (form.region) {
+    districts.value = props.regionsWithDistricts[form.region] || [];
+}
 
 const search = () => {
     router.get(route("admin.inventory"), {
         search: form.search,
         region: params.region,
         district: params.district,
-        ward: params.ward,
         blood_type: params.blood_type,
     })
 };
 
 const selectRegion = () => {
+    districts.value = props.regionsWithDistricts[form.region] || [];
+    form.district = '';
+
     router.get(route("admin.inventory"), {
         search: params.search,
         region: form.region,
-        district: params.district,
-        ward: params.ward,
+        district: '',
         blood_type: params.blood_type,
-    })
+    });
+
 };
 
 const selectDistrict = () => {
@@ -49,17 +57,6 @@ const selectDistrict = () => {
         search: params.search,
         region: params.region,
         district: form.district,
-        ward: params.ward,
-        blood_type: params.blood_type,
-    })
-};
-
-const selectWard = () => {
-    router.get(route("admin.inventory"), {
-        search: params.search,
-        region: params.region,
-        district: params.district,
-        ward: form.ward,
         blood_type: params.blood_type,
     })
 };
@@ -70,7 +67,6 @@ const selectBloodType = (type) => {
         search: params.search,
         region: params.region,
         district: params.district,
-        ward: params.ward,
     })
 }
 
@@ -106,6 +102,9 @@ const { isSidebarOpen } = useSidebar()
                             <option 
                                 value="" disabled selected>Filter by Region
                             </option>
+                            <option v-for="region in regions"
+                                :key="region" 
+                                :value="region">{{ region }}</option>
                             
                         </select>
                     
@@ -127,33 +126,17 @@ const { isSidebarOpen } = useSidebar()
                         >
                             <option 
                                 value=""
-                            >
+                            
                                 disabled selected>Filter by District
                             </option>
+                            <option v-for="district in districts"
+                                :key="district" 
+                                :value="district">{{ district }}</option>
                             
                         </select>
                     
                 </div>
-                <div class="relative w-full rounded-lg">
-
-                    <div class="pointer-event-non absolute inset-y-0 left-0 flex items-center pl-3">
-                        <span class="grid place-content-center text-sm text-slate-400">
-                            <i class="fa-solid fa-city"></i>
-                        </span>
-                    </div>
-                        <select
-                            @change="selectWard"
-                            id="ward"
-                            name="ward"
-                            v-model="form.ward"
-                            placeholder="Filter by Wards"
-                            class="block w-full rounded-md pr-3 pl-9 text-sm dark:text-slate-900 border-slate-300 outline-0 focus:ring-1 focus:ring-inset focus:ring-blue-400 focus:border-blue-400 placeholder:text-slate-400"
-                        >
-                            <option value="">Filter by Wards</option>
-                            
-                        </select>
-                    
-                </div>
+                
             </div>
             
             <div class=" w-1/4">
@@ -214,14 +197,7 @@ const { isSidebarOpen } = useSidebar()
                     {{ params.district }}
                     <i class="fa-solid fa-xmark"></i>
                 </Link>
-                <Link 
-                    class="px-2 py-[6px] rounded-md bg-blue-500 text-white flex items-center gap-2"
-                    v-if="params.ward"
-                    :href="route('admin.inventory', { ...params, ward: null, page: null })"
-                >
-                    {{ params.ward }}
-                    <i class="fa-solid fa-xmark"></i>
-                </Link>
+                
                 
             </div>
 
@@ -252,7 +228,6 @@ const { isSidebarOpen } = useSidebar()
                         <th class="p-3 text-left w-1/4">Location</th>
                         <th class="p-3 text-right">Blood type</th>
                         <th class="p-3 w-1/5 text-right">quantity</th>
-                        <th class="p-3 w-1/5 text-right">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -260,10 +235,8 @@ const { isSidebarOpen } = useSidebar()
                         <td class="p-3">{{ blood.hospital.name }}</td>
                         <td class="p-3 w-1/4">{{ blood.hospital.location.address}}</td>
                         <td class="p-3 text-right">{{ blood.blood_type }}</td>
-                        <td class="p-3 w-1/5 text-right">{{ blood.quantity }}</td>
-                        <td class="py-3 px-5 w-1/5 text-right">
-                            <Link :href="route('admin.inventory')" class=" text-blue-500 font-medium text-sm dark:text-blue-300">Edit</Link>                    
-                        </td>
+                        <td class="p-3 w-1/5 text-right pr-10">{{ blood.quantity }}</td>
+                        
                     </tr>
                 </tbody>
             </table>

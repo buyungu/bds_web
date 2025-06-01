@@ -30,10 +30,15 @@ class DonorController extends Controller
             ->where('location->region', $region)
             ->count();
 
+         $events = EventRegistration::
+                    where('user_id', $donorId)
+                    ->count();
+
         return inertia('Donor/Dashboard', [
             'activeRequests' => $activeRequests,
             'totalDonations' => $totalDonations,
             'upcomingEvents' => $upcomingEvents,
+            'enrolledEvents' => $events,
         ]);
     }
 
