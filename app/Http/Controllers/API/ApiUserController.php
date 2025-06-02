@@ -31,6 +31,17 @@ class ApiUserController extends Controller
         ]);
     }
 
+    // events
+    public function events()
+    {
+        $events = Event::with('user:id,name,email,phone')
+            ->get();
+
+        return response()->json([
+            'events' => $events,
+        ]);
+    }
+
     // Donation History
     public function myDonations(Request $request)
     {
