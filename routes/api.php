@@ -13,7 +13,8 @@ Route::get('/user', function (Request $request) {
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 
-Route::get('/events', [ApiUserController::class, 'events' ]);
+
+
 
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -45,11 +46,16 @@ Route::middleware('auth:sanctum')->group(function () {
     // Recipient's own blood requests
     Route::get('/my-requests', [ApiUserController::class, 'myRequests']);
 
-    // Placeholder for find donors
-    Route::get('/find-donors', [ApiUserController::class, 'findDonors']);
-
+    
     // Profile routes
     Route::get('/profile', [ApiUserController::class, 'viewProfile']);
     Route::put('/profile', [ApiUserController::class, 'update']);
 
 });
+
+// ---------- Testing Routes ---------- //
+Route::get('/events', [ApiUserController::class, 'events' ]);
+// Placeholder for find donors
+Route::get('/find-donors', [ApiUserController::class, 'findDonors']);
+// All Requests
+Route::get('/requests', [ApiUserController::class, 'allRequests']);

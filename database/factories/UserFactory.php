@@ -20,10 +20,10 @@ class UserFactory extends Factory
             'lat' => fake()->latitude(-7, -6), // Example: around Dar es Salaam
             'lng' => fake()->longitude(39, 40),
             'address' => 'Mataa shungashunga, Dar es Salaam 16103, Tanzania',
-            'name' => 'TonCheers Web Designer',
+            'name' => 'Mabibo Hospital',
             'url' => 'https://maps.google.com/?cid=13159152526387155134',
-            'district' => 'Nyamagana',
-            'region' => 'Mwanza',
+            'district' => 'Ubungo',
+            'region' => 'Dar es Salaam',
             'country' => 'Tanzania',
         ];
 

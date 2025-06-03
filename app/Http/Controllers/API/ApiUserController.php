@@ -175,8 +175,10 @@ class ApiUserController extends Controller
     // Dummy endpoint for "Find Donors" (implement as needed)
     public function findDonors()
     {
+        $donors = User::where('role', 'user')
+            ->get(['id', 'name', 'email', 'blood_type', 'phone','location']);
         return response()->json([
-            'message' => 'Donor search functionality coming soon.'
+            'donors' => $donors
         ]);
     }
 
@@ -212,6 +214,24 @@ class ApiUserController extends Controller
         return response()->json([
             'message' => 'Profile updated successfully.',
             'user' => $user->fresh(),
+        ]);
+    }
+
+
+    // Just for testing purposes
+    public function allRequests()
+    {
+        
+
+        $bloodRequests = BloodRequest::whereIn('status', ['pending', 'partially matched', 'matched'])
+            ->with([
+                'recipient:id,name,email,avatar,phone,location',
+                'hospital:id,name,email,location',
+            ])
+            ->get();
+
+        return response()->json([
+            'requests' => $bloodRequests
         ]);
     }
 
