@@ -227,6 +227,7 @@ class ApiUserController extends Controller
             ->with([
                 'recipient:id,name,email,avatar,phone,location',
                 'hospital:id,name,email,location',
+                'donors:id,name,email,avatar,phone,location'
             ])
             ->get();
 
