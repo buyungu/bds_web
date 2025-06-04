@@ -20,7 +20,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
-
+    Route::get('/events', [ApiUserController::class, 'index' ]);
     
     // Dashboard summary
     Route::get('/dashboard', [ApiUserController::class, 'index']);
@@ -54,7 +54,6 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 // ---------- Testing Routes ---------- //
-Route::get('/events', [ApiUserController::class, 'events' ]);
 // Placeholder for find donors
 Route::get('/find-donors', [ApiUserController::class, 'findDonors']);
 // All Requests

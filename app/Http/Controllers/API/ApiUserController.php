@@ -27,7 +27,6 @@ class ApiUserController extends Controller
 
         return response()->json([
             'events' => $upcomingEvents,
-            'user' => $user
         ]);
     }
 
