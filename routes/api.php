@@ -20,11 +20,14 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    Route::get('/events', [ApiUserController::class, 'index' ]);
-    
-    // Dashboard summary
-    Route::get('/dashboard', [ApiUserController::class, 'index']);
+    Route::get('/events', [ApiUserController::class, 'events' ]);
 
+    // All Requests based on user location and blood type
+    Route::get('/requests', [ApiUserController::class, 'requests']);
+
+    // Placeholder for find donors
+    Route::get('/find-donors', [ApiUserController::class, 'findDonors']);
+    
     // Donation history
     Route::get('/donations', [ApiUserController::class, 'myDonations']);
 
@@ -54,7 +57,4 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 // ---------- Testing Routes ---------- //
-// Placeholder for find donors
-Route::get('/find-donors', [ApiUserController::class, 'findDonors']);
-// All Requests
-Route::get('/requests', [ApiUserController::class, 'allRequests']);
+

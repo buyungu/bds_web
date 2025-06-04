@@ -15,7 +15,7 @@ use Illuminate\Validation\Rule;
 class ApiUserController extends Controller
 {
     // Dashboard Summary
-    public function index(Request $request)
+    public function events(Request $request)
     {
         $user = $request->user();
         $region = $user->location['region'];  
@@ -30,16 +30,6 @@ class ApiUserController extends Controller
         ]);
     }
 
-    // events
-    public function events()
-    {
-        $events = Event::with('user:id,name,email,phone')
-            ->get();
-
-        return response()->json([
-            'events' => $events,
-        ]);
-    }
 
     // Donation History
     public function myDonations(Request $request)
@@ -84,7 +74,9 @@ class ApiUserController extends Controller
             ])
             ->get();
 
-        return response()->json($bloodRequests);
+        return response()->json([
+            'requests' => $bloodRequests
+        ]);
     }
 
 
@@ -167,15 +159,19 @@ class ApiUserController extends Controller
             ->get();
 
         return response()->json([
-            'bloodRequests' => $requests
+            'myRequests' => $requests
         ]);
     }
 
     // Dummy endpoint for "Find Donors" (implement as needed)
-    public function findDonors()
+    public function findDonors(Request $request)
     {
+        $region = $request->user()->location['region'] ?? null;
+
         $donors = User::where('role', 'user')
-            ->get(['id', 'name', 'email', 'blood_type', 'phone','location']);
+            ->where('location->region', $region)
+            ->get(['id', 'name', 'email', 'blood_type', 'phone', 'location']);
+
         return response()->json([
             'donors' => $donors
         ]);
@@ -217,23 +213,7 @@ class ApiUserController extends Controller
     }
 
 
-    // Just for testing purposes
-    public function allRequests()
-    {
-        
 
-        $bloodRequests = BloodRequest::whereIn('status', ['pending', 'partially matched', 'matched'])
-            ->with([
-                'recipient:id,name,email,avatar,phone,location',
-                'hospital:id,name,email,location',
-                'donors:id,name,email,avatar,phone,location'
-            ])
-            ->get();
-
-        return response()->json([
-            'requests' => $bloodRequests
-        ]);
-    }
 
 
 
