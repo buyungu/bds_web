@@ -18,7 +18,7 @@ class ApiUserController extends Controller
     public function events(Request $request)
     {
         $user = $request->user();
-        $region = $user->location['region'];  
+        $region = $user->location['region'];
 
         $upcomingEvents = Event::where('status', 'pending')
             ->where('location->region', $region)

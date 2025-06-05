@@ -22,6 +22,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/events', [ApiUserController::class, 'events' ]);
 
+
     // All Requests based on user location and blood type
     Route::get('/requests', [ApiUserController::class, 'requests']);
 
@@ -30,6 +31,7 @@ Route::middleware('auth:sanctum')->group(function () {
     
     // Donation history
     Route::get('/donations', [ApiUserController::class, 'myDonations']);
+
 
     // Registered events
     Route::get('/registered-events', [ApiUserController::class, 'registeredEvents']);
