@@ -69,8 +69,9 @@ class ApiUserController extends Controller
                 $query->where('location->region', $region);
             })
             ->with([
-                'recipient:id,name,email,avatar,location',
+                'recipient:id,name,email,avatar,location,phone',
                 'hospital:id,name,email,location',
+                'donors:id,name,email,avatar,phone'
             ])
             ->get();
 
@@ -155,8 +156,11 @@ class ApiUserController extends Controller
         $recipientId = $request->user()->id;
 
         $requests = BloodRequest::where('recipient_id', $recipientId)
-            ->with(['hospital:id,name,email,avatar,location'])
-            ->get();
+            ->with([
+                'recipient:id,name,email,avatar,location,phone',
+                'hospital:id,name,email,location',
+                'donors:id,name,email,avatar,phone'
+            ])->get();
 
         return response()->json([
             'myRequests' => $requests
