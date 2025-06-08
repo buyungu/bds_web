@@ -56,6 +56,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/profile', [ApiUserController::class, 'viewProfile']);
     Route::put('/profile', [ApiUserController::class, 'update']);
 
+    Route::post('/donate/{bloodRequestId}', [ApiUserController::class, 'donate']);
+
 });
 
 // ---------- Testing Routes ---------- //

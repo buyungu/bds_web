@@ -73,12 +73,18 @@ class ApiUserController extends Controller
                 'hospital:id,name,email,location',
                 'donors:id,name,email,avatar,phone'
             ])
-            ->get();
+            ->get()
+            ->map(function ($request) use ($user) {
+                // Append the 'has_donated' attribute
+                $request->has_donated = $request->donors->contains('id', $user->id);
+                return $request;
+            });
 
         return response()->json([
             'requests' => $bloodRequests
         ]);
     }
+
 
 
     // Register a user (donor) to an event
@@ -153,6 +159,7 @@ class ApiUserController extends Controller
     // View recipient's blood requests
     public function myRequests(Request $request)
     {
+        $user = $request->user();
         $recipientId = $request->user()->id;
 
         $requests = BloodRequest::where('recipient_id', $recipientId)
@@ -160,7 +167,12 @@ class ApiUserController extends Controller
                 'recipient:id,name,email,avatar,location,phone',
                 'hospital:id,name,email,location',
                 'donors:id,name,email,avatar,phone'
-            ])->get();
+            ])->get()
+            ->map(function ($request) use ($user) {
+                // Append the 'has_donated' attribute
+                $request->has_donated = $request->donors->contains('id', $user->id);
+                return $request;
+            });
 
         return response()->json([
             'myRequests' => $requests
@@ -190,7 +202,7 @@ class ApiUserController extends Controller
     }
 
     // Update authenticated user's profile
-    public function update(Request $request)
+    public function update(Request $request) 
     {
         $user = $request->user();
 
@@ -215,6 +227,50 @@ class ApiUserController extends Controller
             'user' => $user->fresh(),
         ]);
     }
+
+    // Donate blood
+    public function donate(Request $request, $bloodRequestId)
+{
+    $donor = $request->user();
+    $bloodRequest = BloodRequest::findOrFail($bloodRequestId);
+
+    // Check if donor already donated
+    if ($bloodRequest->donors()->wherePivot('donor_id', $donor->id)->exists()) {
+        return response()->json([
+            'success' => false,
+            'message' => 'You have already donated for this request.'
+        ], 400);
+    }
+
+    // Check if request is already fulfilled
+    if ($bloodRequest->quantity <= 0) {
+        return response()->json([
+            'success' => false,
+            'message' => 'This request is already fulfilled.'
+        ], 400);
+    }
+
+    // Attach donor
+    $bloodRequest->donors()->attach($donor->id);
+
+    // Reduce quantity
+    $bloodRequest->quantity -= 1;
+
+    // Update status
+    $bloodRequest->status = ($bloodRequest->quantity > 0) ? 'partially matched' : 'matched';
+    $bloodRequest->save();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Thank you for donating!',
+        'data' => [
+            'blood_request_id' => $bloodRequest->id,
+            'remaining_quantity' => $bloodRequest->quantity,
+            'status' => $bloodRequest->status
+        ]
+    ], 200);
+}
+
 
 
 
