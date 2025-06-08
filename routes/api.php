@@ -58,6 +58,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/donate/{bloodRequestId}', [ApiUserController::class, 'donate']);
 
+    // Blood request creation
+    Route::post('/request-blood', [ApiUserController::class, 'createBloodRequest']);
+
 });
 
 // ---------- Testing Routes ---------- //

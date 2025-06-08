@@ -23,7 +23,16 @@ class ApiUserController extends Controller
         $upcomingEvents = Event::where('status', 'pending')
             ->where('location->region', $region)
             ->with('user:id,name,email,phone')
-            ->get();
+            ->get()
+            ->map(function ($event) use ($user) {
+                $registration = $event->registrations->first(); // Get this user's registration if any
+
+                $event->is_enrolled = $registration ? true : false;
+                $event->enrollment_id = $registration ? $registration->id : null;
+
+                unset($event->registrations); // Optionally hide the full relationship
+                return $event;
+            });
 
         return response()->json([
             'events' => $upcomingEvents,
@@ -167,7 +176,7 @@ class ApiUserController extends Controller
                 'recipient:id,name,email,avatar,location,phone',
                 'hospital:id,name,email,location',
                 'donors:id,name,email,avatar,phone'
-            ])->get()
+            ])->latest()->get()
             ->map(function ($request) use ($user) {
                 // Append the 'has_donated' attribute
                 $request->has_donated = $request->donors->contains('id', $user->id);
@@ -230,47 +239,73 @@ class ApiUserController extends Controller
 
     // Donate blood
     public function donate(Request $request, $bloodRequestId)
-{
-    $donor = $request->user();
-    $bloodRequest = BloodRequest::findOrFail($bloodRequestId);
+    {
+        $donor = $request->user();
+        $bloodRequest = BloodRequest::findOrFail($bloodRequestId);
 
-    // Check if donor already donated
-    if ($bloodRequest->donors()->wherePivot('donor_id', $donor->id)->exists()) {
+        // Check if donor already donated
+        if ($bloodRequest->donors()->wherePivot('donor_id', $donor->id)->exists()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You have already donated for this request.'
+            ], 400);
+        }
+
+        // Check if request is already fulfilled
+        if ($bloodRequest->quantity <= 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This request is already fulfilled.'
+            ], 400);
+        }
+
+        // Attach donor
+        $bloodRequest->donors()->attach($donor->id);
+
+        // Reduce quantity
+        $bloodRequest->quantity -= 1;
+
+        // Update status
+        $bloodRequest->status = ($bloodRequest->quantity > 0) ? 'partially matched' : 'matched';
+        $bloodRequest->save();
+
         return response()->json([
-            'success' => false,
-            'message' => 'You have already donated for this request.'
-        ], 400);
+            'success' => true,
+            'message' => 'Thank you for donating!',
+            'data' => [
+                'blood_request_id' => $bloodRequest->id,
+                'remaining_quantity' => $bloodRequest->quantity,
+                'status' => $bloodRequest->status
+            ]
+        ], 200);
     }
 
-    // Check if request is already fulfilled
-    if ($bloodRequest->quantity <= 0) {
+
+    public function createBloodRequest(Request $request) 
+    {
+        $validated = $request->validate([
+            'hospital_id' => 'required|exists:users,id',
+            'blood_type' => 'required|string',
+            'quantity' => 'required|integer',
+            'urgency' => 'required|string',
+        ]);
+
+        $validated = array_merge($validated, [
+            'recipient_id' => $request->user()->id,
+            'status' => 'pending',
+        ]);
+
+        $bloodRequest = new BloodRequest($validated);
+        $bloodRequest->save();
+
         return response()->json([
-            'success' => false,
-            'message' => 'This request is already fulfilled.'
-        ], 400);
+            'success' => true,
+            'message' => 'Your blood request has been submitted successfully.',
+            'data' => $bloodRequest
+        ], 201);
+
+
     }
-
-    // Attach donor
-    $bloodRequest->donors()->attach($donor->id);
-
-    // Reduce quantity
-    $bloodRequest->quantity -= 1;
-
-    // Update status
-    $bloodRequest->status = ($bloodRequest->quantity > 0) ? 'partially matched' : 'matched';
-    $bloodRequest->save();
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Thank you for donating!',
-        'data' => [
-            'blood_request_id' => $bloodRequest->id,
-            'remaining_quantity' => $bloodRequest->quantity,
-            'status' => $bloodRequest->status
-        ]
-    ], 200);
-}
-
 
 
 
