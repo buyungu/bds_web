@@ -24,23 +24,23 @@ class DatabaseSeeder extends Seeder
         // Create 20 demo users
         $users = User::factory()->count(5)->create();
 
-        // // Optionally: Create one admin with known credentials
-        // User::factory()->create([
-        //     'name' => 'Daud Benjamini',
-        //     'email' => 'daudbuyungu@gmail.com',
-        //     'password' => bcrypt('1234'),
-        //     'role' => 'admin',
-        //     'location' => [
-        //         'lat' => -6.712, // Example: around Dar es Salaam
-        //         'lng' => 7.732,
-        //         'address' => 'Mataa shungashunga, Dar es Salaam 16103, Tanzania',
-        //         'name' => 'TonCheers Web Designer',
-        //         'url' => 'https://maps.google.com/?cid=13159152526387155134',
-        //         'district' => 'Kinondoni',
-        //         'region' => 'Dar es Salaam',
-        //         'country' => 'Tanzania',
-        //      ],
-        // ]);
+        // Optionally: Create one admin with known credentials
+        User::factory()->create([
+            'name' => 'Daud Benjamini',
+            'email' => 'daudbuyungu@gmail.com',
+            'password' => bcrypt('1234'),
+            'role' => 'admin',
+            'location' => [
+                'lat' => -6.712, // Example: around Dar es Salaam
+                'lng' => 7.732,
+                'address' => 'Mataa shungashunga, Dar es Salaam 16103, Tanzania',
+                'name' => 'TonCheers Web Designer',
+                'url' => 'https://maps.google.com/?cid=13159152526387155134',
+                'district' => 'Kinondoni',
+                'region' => 'Dar es Salaam',
+                'country' => 'Tanzania',
+             ],
+        ]);
 
         $hospitals = User::where('role', 'hospital')->get();
         // Create 20 events, randomly linked to those users

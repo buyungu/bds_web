@@ -61,6 +61,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // Blood request creation
     Route::post('/request-blood', [ApiUserController::class, 'createBloodRequest']);
 
+    // Save Fcm token (Device Token)
+    Route::put('/save-fcm-token', [ApiUserController::class, 'saveFcmToken']);
+
 });
 
 // ---------- Testing Routes ---------- //

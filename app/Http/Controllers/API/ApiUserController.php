@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\FcmNotification;
 use App\Http\Controllers\Controller;
 use App\Models\BloodRequest;
 use App\Models\DonorDonation;
@@ -125,6 +126,16 @@ class ApiUserController extends Controller
             'event_id' => $event->id,
             'status' => 'pending'
         ]);
+
+        // Send FCM notification to the user
+        if ($user->fcm_token) {
+            FcmNotification::send(
+                $user->fcm_token,
+                'Event Registration',
+                "You have successfully enrolled in the event: {$event->title}",
+                ['event_id' => $event->id, 'type' => 'event_enrollment']
+            );
+        }
 
         return response()->json([
             'message' => 'Successfully registered for the event.',
@@ -307,9 +318,18 @@ class ApiUserController extends Controller
 
     }
 
+    public function saveFcmToken(Request $request)
+    {
+        $request->validate([
+            'fcm_token' => 'required|string',
+        ]);
 
+        $user = $request->user();
+        $user->fcm_token = $request->fcm_token;
+        $user->save();
 
-
+        return response()->json(['message' => 'Token saved']);
+    }
 
 
 }
