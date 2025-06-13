@@ -2,35 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\FcmNotification;
 use App\Models\BloodRequest;
 use App\Http\Requests\UpdateBloodRequestRequest;
 use App\Models\DonorDonation;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class BloodRequestController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-
     public function store(Request $request)
     { 
         $validated = $request->validate([
@@ -49,8 +31,44 @@ class BloodRequestController extends Controller
         
         $bloodRequest->save();
 
+        // Send FCM notification to the recipient
+        if ($request->user()->fcm_token) {
+            FcmNotification::send(
+                $request->user()->fcm_token,
+                'Blood Request Created',
+                "Your blood request has been created successfully.",
+                ['blood_request_id' => $bloodRequest->id, 'type' => 'blood_request']
+            );
+        }
+
+        // Send FCM notification to donors in the same region whose specified blood type matches
+
+        $region = $request->user()->location['region'] ?? null;
+        $bloodType = $bloodRequest->blood_type;
+
+        // Find donors in the same region and with the same blood type, who have an FCM token
+        $donors = User::where('role', 'user')
+            ->where('blood_type', $bloodType)
+            ->where('location->region', $region)
+            ->whereNotNull('fcm_token')
+            ->pluck('fcm_token')
+            ->toArray();
+
+        if (!empty($donors)) {
+            FcmNotification::sendToMany(
+                $donors,
+                'New Blood Request',
+                "A new blood request for {$bloodType} is available in your region.",
+                [
+                    'blood_request_id' => $bloodRequest->id,
+                    'type' => 'blood_request'
+                ]
+            );
+        }
+
         return redirect()->route('recipient.requests')->with('status', "Your Blood request has been added successful");
     }
+
     public function donate(Request $request, $bloodRequestId)
     {
         $donor = Auth::user();
@@ -78,6 +96,26 @@ class BloodRequestController extends Controller
         $bloodRequest->status = ($bloodRequest->quantity > 0) ? 'partially matched' : 'matched';
         
         $bloodRequest->save();
+
+        // send FCM notification to the donor
+        if ($donor->fcm_token) {
+            FcmNotification::send(
+                $donor->fcm_token,
+                'Donation Confirmation',
+                "You have pledged to donate for request: {$bloodRequest->id}",
+                ['blood_request_id' => $bloodRequest->id, 'type' => 'donation']
+            );
+        }
+
+        // Send FCM notification to the recipient and hospital
+        if ($bloodRequest->recipient->fcm_token) {
+            FcmNotification::send(
+                $bloodRequest->recipient->fcm_token,
+                'New Donation',
+                "A donor has pledged to donate for your request: {$bloodRequest->id}",
+                ['blood_request_id' => $bloodRequest->id, 'type' => 'donation']
+            );
+        }
     
         return back()->with('status', 'Blood donated successfully.');
     }
@@ -102,40 +140,17 @@ class BloodRequestController extends Controller
             ]);
         }
 
+        // Send FCM notification to the recipient
+        if ($bloodRequest->recipient->fcm_token) {
+            FcmNotification::send(
+                $bloodRequest->recipient->fcm_token,
+                'Blood Assigned',
+                "Your blood request has been fulfilled and assigned to you.",
+                ['blood_request_id' => $bloodRequest->id, 'type' => 'blood_assignment']
+            );
+        }
+
         return back()->with('status', 'Blood successfully assigned to recipient.');
-    }
-
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(BloodRequest $bloodRequest)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(BloodRequest $bloodRequest)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, BloodRequest $bloodRequest)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(BloodRequest $bloodRequest)
-    {
-        //
     }
 
     public function viewRequest($id)

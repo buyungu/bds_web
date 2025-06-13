@@ -144,8 +144,10 @@ class ApiUserController extends Controller
     }
 
     // Unenroll from an event
-    public function unenrollfromEvent(EventRegistration $enroll)
+    public function unenrollfromEvent(Request $request, EventRegistration $enroll)
     {
+        $user = $request->user();
+
         // Ensure only the owner can delete their registration
         if (auth()->id() !== $enroll->user_id) {
             return response()->json([
@@ -153,7 +155,20 @@ class ApiUserController extends Controller
             ], 403);
         }
 
+        // Get the related event before deleting the registration
+        $event = $enroll->event;
+
         $enroll->delete();
+
+        // Send FCM notification to the user
+        if ($user->fcm_token && $event) {
+            FcmNotification::send(
+                $user->fcm_token,
+                'Event Registration',
+                "You have successfully unenrolled from the event: {$event->title}",
+                ['event_id' => $event->id, 'type' => 'event_unenrollment']
+            );
+        }
 
         return response()->json([
             'message' => 'Successfully unenrolled from the event.'
@@ -262,6 +277,26 @@ class ApiUserController extends Controller
             ], 400);
         }
 
+        // send FCM notification to the donor
+        if ($donor->fcm_token) {
+            FcmNotification::send(
+                $donor->fcm_token,
+                'Donation Confirmation',
+                "You have pledged to donate for request: {$bloodRequest->id}",
+                ['blood_request_id' => $bloodRequest->id, 'type' => 'donation']
+            );
+        }
+
+        // Send FCM notification to the recipient and hospital
+        if ($bloodRequest->recipient->fcm_token) {
+            FcmNotification::send(
+                $bloodRequest->recipient->fcm_token,
+                'New Donation',
+                "A donor has pledged to donate for your request: {$bloodRequest->id}",
+                ['blood_request_id' => $bloodRequest->id, 'type' => 'donation']
+            );
+        }
+
         // Check if request is already fulfilled
         if ($bloodRequest->quantity <= 0) {
             return response()->json([
@@ -308,6 +343,41 @@ class ApiUserController extends Controller
 
         $bloodRequest = new BloodRequest($validated);
         $bloodRequest->save();
+
+        // Send FCM notification to the recipient
+        if ($request->user()->fcm_token) {
+            FcmNotification::send(
+                $request->user()->fcm_token,
+                'Blood Request Created',
+                "Your blood request has been created successfully.",
+                ['blood_request_id' => $bloodRequest->id, 'type' => 'blood_request']
+            );
+        }
+
+        // Send FCM notification to donors in the same region whose specified blood type matches
+
+        $region = $request->user()->location['region'] ?? null;
+        $bloodType = $bloodRequest->blood_type;
+
+        // Find donors in the same region and with the same blood type, who have an FCM token
+        $donors = User::where('role', 'user')
+            ->where('blood_type', $bloodType)
+            ->where('location->region', $region)
+            ->whereNotNull('fcm_token')
+            ->pluck('fcm_token')
+            ->toArray();
+
+        if (!empty($donors)) {
+            FcmNotification::sendToMany(
+                $donors,
+                'New Blood Request',
+                "A new blood request for {$bloodType} is available in your region.",
+                [
+                    'blood_request_id' => $bloodRequest->id,
+                    'type' => 'blood_request'
+                ]
+            );
+        }
 
         return response()->json([
             'success' => true,

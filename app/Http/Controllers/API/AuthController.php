@@ -18,7 +18,7 @@ class AuthController extends Controller
             'avatar' => ['file', 'nullable', 'max:3000'],
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|confirmed|min:3',
+            'password' => 'required|string|min:3',
             'blood_type' => 'nullable|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
             'phone' => ['required', 'regex:/^(\+?[0-9]{10,15}|0[0-9]{9})$/'],
             'location' => 'required|array',

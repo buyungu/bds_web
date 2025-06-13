@@ -37,7 +37,7 @@ class DatabaseSeeder extends Seeder
                 'name' => 'TonCheers Web Designer',
                 'url' => 'https://maps.google.com/?cid=13159152526387155134',
                 'district' => 'Kinondoni',
-                'region' => 'Dar es Salaam',
+                'region' => 'Dar es Salam',
                 'country' => 'Tanzania',
              ],
         ]);

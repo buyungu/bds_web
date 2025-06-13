@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\District;
+use App\Helpers\FcmNotification;
 use App\Models\Event;
 use App\Models\EventRegistration;
-use App\Models\Region;
-use App\Models\Ward;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -65,6 +64,33 @@ class EventController extends Controller
         }
 
         Auth::user()->events()->create($fields);
+
+        // send notification to all users in the same region
+        
+
+        $region = $fields['location']['region'] ?? null;
+
+        if ($region) {
+            // Get all users in the same region with an FCM token
+            $tokens = User::where('location->region', $region)
+                ->whereNotNull('fcm_token')
+                ->pluck('fcm_token')
+                ->toArray();
+
+            if (!empty($tokens)) {
+                FcmNotification::sendToMany(
+                    $tokens,
+                    'New Event in Your Region',
+                    "A new event \"{$fields['title']}\" has been created in your region.",
+                    [
+                        'type' => 'event',
+                        'region' => $region,
+                        'event_id' => $event->id ?? null,
+                        // You can add more data as needed
+                    ]
+                );
+            }
+        }
 
         return back()->with('status', 'Listing created successfully.');
 
@@ -131,6 +157,31 @@ class EventController extends Controller
         }
 
         $event->update($fields);
+
+        // SEND NOTIFICATION TO ALL USERS IN THE SAME REGION
+        $region = $fields['location']['region'] ?? null;
+        if ($region) {
+            // Get all users in the same region with an FCM token
+            $tokens = User::where('location->region', $region)
+                ->whereNotNull('fcm_token')
+                ->pluck('fcm_token')
+                ->toArray();
+
+            if (!empty($tokens)) {
+                FcmNotification::sendToMany(
+                    $tokens,
+                    'Event Updated',
+                    "The event \"{$fields['title']}\" has been updated.",
+                    [
+                        'type' => 'event',
+                        'region' => $region,
+                        'event_id' => $event->id ?? null,
+                        // You can add more data as needed
+                    ]
+                );
+            }
+        }
+        
 
         return back()->with('status', 'Event Updated successfully.');
     }
