@@ -23,7 +23,7 @@ class UserFactory extends Factory
             'name' => 'Mabibo Hospital',
             'url' => 'https://maps.google.com/?cid=13159152526387155134',
             'district' => 'Ubungo',
-            'region' => 'Dar es Salaam',
+            'region' => 'Mwanza Region',
             'country' => 'Tanzania',
         ];
 

@@ -23,15 +23,20 @@ class ApiUserController extends Controller
 
         $upcomingEvents = Event::where('status', 'pending')
             ->where('location->region', $region)
-            ->with('user:id,name,email,phone')
+            ->with([
+                'user:id,name,email,phone',
+                'registrations' => function ($q) use ($user) {
+                    $q->where('user_id', $user->id);
+                }
+            ])
             ->get()
             ->map(function ($event) use ($user) {
-                $registration = $event->registrations->first(); // Get this user's registration if any
+                $registration = $event->registrations->first();
 
                 $event->is_enrolled = $registration ? true : false;
                 $event->enrollment_id = $registration ? $registration->id : null;
 
-                unset($event->registrations); // Optionally hide the full relationship
+                unset($event->registrations);
                 return $event;
             });
 
@@ -246,7 +251,9 @@ class ApiUserController extends Controller
             'email' => ['required', 'email', Rule::unique('users')->ignore($user->id)],
             'blood_type' => 'nullable|string|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
             'location' => 'nullable|array',
+            'phone' => ['required', 'regex:/^(\+?[0-9]{10,15}|0[0-9]{9})$/'],
             'password' => 'nullable|string|min:8|confirmed',
+            'avatar' => ['file', 'nullable', 'max:3000'],
         ]);
 
         if (!empty($fields['password'])) {
