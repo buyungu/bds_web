@@ -37,7 +37,7 @@ class BloodRequestController extends Controller
                 $request->user()->fcm_token,
                 'Blood Request Created',
                 "Your blood request has been created successfully.",
-                ['blood_request_id' => $bloodRequest->id, 'type' => 'blood_request']
+                ['blood_request_id' => $bloodRequest->id, 'type' => 'donation']
             );
         }
 
@@ -61,7 +61,7 @@ class BloodRequestController extends Controller
                 "A new blood request for {$bloodType} is available in your region.",
                 [
                     'blood_request_id' => $bloodRequest->id,
-                    'type' => 'blood_request'
+                    'type' => 'donation'
                 ]
             );
         }

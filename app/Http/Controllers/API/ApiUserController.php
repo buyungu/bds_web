@@ -11,6 +11,7 @@ use App\Models\EventRegistration;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class ApiUserController extends Controller
@@ -138,7 +139,9 @@ class ApiUserController extends Controller
                 $user->fcm_token,
                 'Event Registration',
                 "You have successfully enrolled in the event: {$event->title}",
-                ['event_id' => $event->id, 'type' => 'event_enrollment']
+                [
+                    'route' => "/event-details/{$event->id}", // Flutter expects this for navigation
+                    'event_id' => $event->id, 'type' => 'event']
             );
         }
 
@@ -171,7 +174,10 @@ class ApiUserController extends Controller
                 $user->fcm_token,
                 'Event Registration',
                 "You have successfully unenrolled from the event: {$event->title}",
-                ['event_id' => $event->id, 'type' => 'event_unenrollment']
+                [
+                    'route' => "/event-details/{$event->id}", // Flutter expects this for navigation
+                    'event_id' => $event->id, 'type' => 'event'
+                ]
             );
         }
 
@@ -252,8 +258,7 @@ class ApiUserController extends Controller
             'blood_type' => 'nullable|string|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
             'location' => 'nullable|array',
             'phone' => ['required', 'regex:/^(\+?[0-9]{10,15}|0[0-9]{9})$/'],
-            'password' => 'nullable|string|min:8|confirmed',
-            'avatar' => ['file', 'nullable', 'max:3000'],
+            'password' => 'nullable|string|min:8',
         ]);
 
         if (!empty($fields['password'])) {
@@ -262,6 +267,7 @@ class ApiUserController extends Controller
             unset($fields['password']);
         }
 
+        $request->user()->fill($fields);
         $user->update($fields);
 
         return response()->json([
@@ -290,7 +296,10 @@ class ApiUserController extends Controller
                 $donor->fcm_token,
                 'Donation Confirmation',
                 "You have pledged to donate for request: {$bloodRequest->id}",
-                ['blood_request_id' => $bloodRequest->id, 'type' => 'donation']
+                [
+                    'blood_request_id' => $bloodRequest->id, 
+                    'type' => 'donation'
+                ]
             );
         }
 
@@ -357,7 +366,9 @@ class ApiUserController extends Controller
                 $request->user()->fcm_token,
                 'Blood Request Created',
                 "Your blood request has been created successfully.",
-                ['blood_request_id' => $bloodRequest->id, 'type' => 'blood_request']
+                [
+                    'blood_request_id' => $bloodRequest->id, 'type' => 'donation'
+                ]
             );
         }
 
@@ -381,7 +392,7 @@ class ApiUserController extends Controller
                 "A new blood request for {$bloodType} is available in your region.",
                 [
                     'blood_request_id' => $bloodRequest->id,
-                    'type' => 'blood_request'
+                    'type' => 'donation',
                 ]
             );
         }
@@ -391,7 +402,6 @@ class ApiUserController extends Controller
             'message' => 'Your blood request has been submitted successfully.',
             'data' => $bloodRequest
         ], 201);
-
 
     }
 
@@ -407,6 +417,5 @@ class ApiUserController extends Controller
 
         return response()->json(['message' => 'Token saved']);
     }
-
 
 }
