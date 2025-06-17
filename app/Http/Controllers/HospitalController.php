@@ -53,8 +53,9 @@ class HospitalController extends Controller
          ->get();
 
         $bloodRequests = BloodRequest::where('hospital_id', $hospitalId)
-            ->with(['recipient:id,name,email,blood_type,avatar'         
-        ])->latest()->paginate(10);
+            ->with(['recipient:id,name,email,blood_type,avatar',
+                    'hospital:id,name,location',
+            ])->latest()->paginate(10);
 
         return inertia('Hospital/Requests', [
             'bloodRequests' => $bloodRequests,

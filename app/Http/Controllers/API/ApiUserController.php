@@ -123,7 +123,7 @@ class ApiUserController extends Controller
 
         if ($alreadyRegistered) {
             return response()->json([
-                'message' => 'You are already enrolled in this event.'
+                'message' => 'You are already enrolled in this event. Pull down to refresh the event details.'
             ], 409);
         }
 
@@ -156,6 +156,7 @@ class ApiUserController extends Controller
     public function unenrollfromEvent(Request $request, EventRegistration $enroll)
     {
         $user = $request->user();
+        
 
         // Ensure only the owner can delete their registration
         if (auth()->id() !== $enroll->user_id) {
@@ -168,6 +169,18 @@ class ApiUserController extends Controller
         $event = $enroll->event;
 
         $enroll->delete();
+        // Check if already unenrolled
+        $alreadyRegistered = EventRegistration::where('user_id', $user->id)
+            ->where('event_id', $event->id)
+            ->exists();
+
+        if (!$alreadyRegistered) {
+            return response()->json([
+                'message' => 'You are already unenrolled in this event. Pull down to refresh the event details.'
+            ], 409);
+        }
+        
+
 
         // Send FCM notification to the user
         if ($user->fcm_token && $event) {
