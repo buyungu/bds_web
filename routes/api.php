@@ -55,6 +55,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Profile routes
     Route::get('/profile', [ApiUserController::class, 'viewProfile']);
     Route::put('/profile', [ApiUserController::class, 'update']);
+    Route::delete('/profile/delete', [ApiUserController::class, 'deleteAccount']);
 
     Route::post('/donate/{bloodRequestId}', [ApiUserController::class, 'donate']);
 

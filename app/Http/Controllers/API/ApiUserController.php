@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use PhpParser\Builder\Function_;
 
 class ApiUserController extends Controller
 {
@@ -273,6 +274,17 @@ class ApiUserController extends Controller
         return response()->json([
             'message' => 'Profile updated successfully.',
             'user' => $user->fresh(),
+        ]);
+    }
+
+    public function deleteAccount(Request $request)
+    {
+        $user = $request->user();
+        $user->currentAccessToken()->delete();
+        // Delete the user
+        $user->delete();
+        return response()->json([
+            'message' => 'Account deleted successfully.'
         ]);
     }
 
