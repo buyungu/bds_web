@@ -63,10 +63,9 @@ class EventController extends Controller
             $fields['image'] = Storage::disk('public')->put('images/events', $request->image);
         }
 
-        Auth::user()->events()->create($fields);
+        $event = Auth::user()->events()->create($fields);
 
         // send notification to all users in the same region
-        
 
         $region = $fields['location']['region'] ?? null;
 
@@ -84,8 +83,7 @@ class EventController extends Controller
                     "A new event \"{$fields['title']}\" has been created in your region.",
                     [
                         'type' => 'event',
-                        'region' => $region,
-                        'event_id' => $event->id ?? null,
+                        'event_id' => $event->id,
                         // You can add more data as needed
                     ]
                 );
@@ -174,8 +172,7 @@ class EventController extends Controller
                     "The event \"{$fields['title']}\" has been updated.",
                     [
                         'type' => 'event',
-                        'region' => $region,
-                        'event_id' => $event->id ?? null,
+                        'event_id' => $event->id,
                         // You can add more data as needed
                     ]
                 );

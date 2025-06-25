@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\FcmNotification;
 use App\Models\Event;
 use App\Models\EventRegistration;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class EventRegistrationController extends Controller
 {
@@ -57,6 +59,18 @@ class EventRegistrationController extends Controller
             'status' => 'pending'
         ]);
 
+        // Send FCM notification to the user
+        if ($user->fcm_token) {
+            FcmNotification::send(
+                $user->fcm_token,
+                'Event Registration',
+                "You have successfully enrolled in the event: {$event->title}",
+                [
+                    'route' => "/event-details/{$event->id}", // Flutter expects this for navigation
+                    'event_id' => $event->id, 'type' => 'event']
+            );
+        }
+
         return back()->with('status', 'You have successfully registered for the event!');
     }
 
@@ -89,7 +103,23 @@ class EventRegistrationController extends Controller
      */
     public function destroy(EventRegistration $enroll)
     {
+        // Get the related event before deleting the registration
+        $event = $enroll->event;
+        $user = Auth::user();
+
         $enroll->delete();
+        // Send FCM notification to the user
+        if ($user->fcm_token && $event) {
+            FcmNotification::send(
+                $user->fcm_token,
+                'Event Registration',
+                "You have successfully unenrolled from the event: {$event->title}",
+                [
+                    'route' => "/event-details/{$event->id}", // Flutter expects this for navigation
+                    'event_id' => $event->id, 'type' => 'event'
+                ]
+            );
+        }
         return redirect()->back()->with('status', 'Unenrolled from an event successful!! ');
     }
 }

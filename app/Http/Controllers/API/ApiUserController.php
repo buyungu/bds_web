@@ -168,7 +168,6 @@ class ApiUserController extends Controller
         // Get the related event before deleting the registration
         $event = $enroll->event;
 
-        $enroll->delete();
         // Check if already unenrolled
         $alreadyRegistered = EventRegistration::where('user_id', $user->id)
             ->where('event_id', $event->id)
@@ -178,7 +177,10 @@ class ApiUserController extends Controller
             return response()->json([
                 'message' => 'You are already unenrolled in this event. Pull down to refresh the event details.'
             ], 409);
-        }
+        } else {
+            // If the user was successfully unenrolled, we can proceed
+            $enroll->delete();
+        }   
         
 
 

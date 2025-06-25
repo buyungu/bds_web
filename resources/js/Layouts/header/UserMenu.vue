@@ -6,27 +6,29 @@
       >
         <span class="mr-3 overflow-hidden rounded-full h-11 w-11 object-cover object-center">
           <img
-              :src="
-                  user.avatar
-                      ? `/storage/${user.avatar}`
-                      : '/storage/avatars/default.jpg'
-              "
-              alt=""
-              class="rounded-full h-11 w-11 object-cover object-center"
+            :src="
+                user.avatar
+                    ? `/storage/${user.avatar}`
+                    : '/storage/avatars/default.jpg'
+            "
+            alt=""
+            class="rounded-full h-11 w-11 object-cover object-center"
           />
         </span>
 
-        <p class="mr-3 font-medium text-sm text-blue-500 block truncate max-w-[150px]">
+        <p class="mr-3 font-medium text-sm text-blue-500 block truncate max-w-[100px] sm:max-w-[150px]">
             {{ user.name }}
         </p>
 
         <i class="fa-solid fa-chevron-down text-blue-500" :class="{ 'rotate-180': dropdownOpen }"></i>
       </button>
 
-      <!-- Dropdown Start -->
       <div
         v-if="dropdownOpen"
-        class="absolute z-50 right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 shadow-lg dark:border-gray-800 dark:bg-gray-900"
+        class="absolute z-50 right-0 mt-[17px] flex flex-col rounded-2xl border border-gray-200 bg-white p-3 shadow-lg dark:border-gray-800 dark:bg-gray-900
+               w-[220px] sm:w-[260px]          /* Adjust width based on breakpoint */
+               left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 /* Center on mobile, right on desktop */
+               "
         @click.stop
       >
         <div>
@@ -59,67 +61,66 @@
           Sign out
         </Link>
       </div>
-      <!-- Dropdown End -->
-    </div>
-  </template>
+      </div>
+</template>
 
-  <script setup>
-  import { ref, onMounted, onUnmounted, computed } from 'vue'
-  import { Link, usePage } from '@inertiajs/vue3'
+<script setup>
+import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { Link, usePage } from '@inertiajs/vue3'
 
-  const user = usePage().props.auth.user;
-  const dropdownOpen = ref(false)
-  const dropdownRef = ref(null)
+const user = usePage().props.auth.user;
+const dropdownOpen = ref(false)
+const dropdownRef = ref(null)
 
-  const menuItems = computed(() => {
-    if (!user) return [];
+const menuItems = computed(() => {
+  if (!user) return [];
 
-    const roleMenus = {
-        admin: [
-          { href: 'admin.dashboard', icon: 'house', text: 'Dashboard' },
-          { href: 'admin.profile', icon: 'user', text: 'Profile Settings' },
-        ],
-        user: [
-          { href: 'donor.dashboard', icon: 'house', text: 'Dashboard' },
-          { href: 'donor.profile', icon: 'user', text: 'Profile Settings' },
-        ],
-        recipient: [
-          { href: 'recipient.dashboard', icon: 'house', text: 'Dashboard' },
-          { href: 'recipient.profile', icon: 'user', text: 'Profile Settings' },
-        ],
-        hospital: [
-          { href: 'hospital.dashboard', icon: 'house', text: 'Dashboard' },
-          { href: 'hospital.profile', icon: 'user', text: 'Profile Settings' },
-        ],
-        organization: [
-          { href: 'organization.dashboard', icon: 'house', text: 'Dashboard' },
-          { href: 'organization.profile', icon: 'user', text: 'Profile Settings' },
-        ],
-    };
+  const roleMenus = {
+      admin: [
+        { href: 'admin.dashboard', icon: 'house', text: 'Dashboard' },
+        { href: 'admin.profile', icon: 'user', text: 'Profile Settings' },
+      ],
+      user: [
+        { href: 'donor.dashboard', icon: 'house', text: 'Dashboard' },
+        { href: 'donor.profile', icon: 'user', text: 'Profile Settings' },
+      ],
+      recipient: [
+        { href: 'recipient.dashboard', icon: 'house', text: 'Dashboard' },
+        { href: 'recipient.profile', icon: 'user', text: 'Profile Settings' },
+      ],
+      hospital: [
+        { href: 'hospital.dashboard', icon: 'house', text: 'Dashboard' },
+        { href: 'hospital.profile', icon: 'user', text: 'Profile Settings' },
+      ],
+      organization: [
+        { href: 'organization.dashboard', icon: 'house', text: 'Dashboard' },
+        { href: 'organization.profile', icon: 'user', text: 'Profile Settings' },
+      ],
+  };
 
-    return roleMenus[user.role] || []
-  });
+  return roleMenus[user.role] || []
+});
 
-  const toggleDropdown = (event) => {
-    event.stopPropagation() // Prevents closing immediately
-    dropdownOpen.value = !dropdownOpen.value
+const toggleDropdown = (event) => {
+  event.stopPropagation() // Prevents closing immediately
+  dropdownOpen.value = !dropdownOpen.value
+}
+
+const closeDropdown = () => {
+  dropdownOpen.value = false
+}
+
+const handleClickOutside = (event) => {
+  if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
+    closeDropdown()
   }
+}
 
-  const closeDropdown = () => {
-    dropdownOpen.value = false
-  }
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+})
 
-  const handleClickOutside = (event) => {
-    if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
-      closeDropdown()
-    }
-  }
-
-  onMounted(() => {
-    document.addEventListener('click', handleClickOutside)
-  })
-
-  onUnmounted(() => {
-    document.removeEventListener('click', handleClickOutside)
-  })
-  </script>
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
+</script>
