@@ -28,11 +28,12 @@ const search = () => {
 </script>
 
 <template>
+  <div class="mx-auto max-w-screen-lg ">
     <Head title=" | Latest Events "/>
     <h1 class="text-2xl font-bold mb-4">Latest Events</h1>
     <SessionMessage :status="status" />
-    <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center gap-2">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+        <div class="flex flex-wrap items-center gap-2">
             <Link 
                 class="px-2 py-1 rounded-md bg-blue-500 text-white flex items-center gap-2"
                 v-if="params.search"
@@ -51,7 +52,7 @@ const search = () => {
             </Link>
         </div>
 
-        <div class="w-1/4">
+        <div class="w-full sm:w-1/3">
             <form @submit.prevent="search">
                 <InputField 
                     type="search"
@@ -64,5 +65,5 @@ const search = () => {
         </div>
     </div>
     <Index :events="events" :status="status"/>
-
+  </div>
 </template>

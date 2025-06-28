@@ -80,7 +80,7 @@
                 <p class="error mt-2">{{ form.errors.avatar }}</p>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid sm:grid-cols-2 gap-4">
                 <div class="space-y-6">
             <!-- Name Input -->
             <div>

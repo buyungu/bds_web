@@ -23,22 +23,18 @@ const deleteEvent = (id) => {
 
     <SessionMessage :status="status"/>
 
-        <!-- -->
-
-        <div v-if="events.data.length"> 
-            <div class="mb-6">
-
-
-                <!-- Table -->
+    <div v-if="events.data.length"> 
+        <div class="mb-6">
+            <!-- Responsive Table -->
+            <div class="overflow-x-auto rounded-md">
                 <table
-                    class="w-full table-fixed border-collapse overflow-hidden rounded-md text-sm ring-1 ring-slate-300 dark:ring-slate-600 bg-white shadow-lg"
+                    class="min-w-[600px] w-full table-fixed border-collapse overflow-hidden rounded-md text-sm ring-1 ring-slate-300 dark:ring-slate-600 bg-white shadow-lg"
                 >
                     <thead
                         class="bg-slate-300 text-xs uppercase text-slate-600 dark:text-slate-400 dark:bg-slate-900"
                     >
                         <tr>
-                            <th class="w-3/4 p-3 text-left">event Title</th>
-
+                            <th class="w-3/4 p-3 text-left">Event Title</th>
                             <th class="w-1/5 py-3 pr-3 text-right">View</th>
                             <th class="w-1/5 py-3 pr-3 text-right">Edit</th>
                             <th class="w-1/5 py-3 pr-3 text-right">Delete</th>
@@ -64,28 +60,15 @@ const deleteEvent = (id) => {
                                     />
                                     <h4 class="font-bold">
                                         {{ event.title }}
-                                        
                                     </h4>
                                 </div>
                             </td>
-
-                            <td
-                                class="w-1/5 py-3 pr-3 text-right text-blue-500"
-                            >
-                                <Link
-                                    :href="route('events.show', event.id)"
-                                    >View</Link
-                                >
+                            <td class="w-1/5 py-3 pr-3 text-right text-blue-500">
+                                <Link :href="route('events.show', event.id)">View</Link>
                             </td>
-
-                            <td
-                                class="w-1/5 py-3 pr-3 text-right text-blue-500"
-                            >
-                                <Link :href="route('events.edit', event.id)"
-                                    >Edit</Link
-                                >
+                            <td class="w-1/5 py-3 pr-3 text-right text-blue-500">
+                                <Link :href="route('events.edit', event.id)">Edit</Link>
                             </td>
-
                             <td class="w-1/5 py-3 pr-3 text-right text-red-500">
                                 <button type="button" @click="deleteEvent(event.id)">
                                     Delete
@@ -95,11 +78,11 @@ const deleteEvent = (id) => {
                     </tbody>
                 </table>
             </div>
-            <div>
-                <PaginationLinks :paginator="events" />
-            </div>
         </div>
+        <div>
+            <PaginationLinks :paginator="events" />
+        </div>
+    </div>
 
-        <div v-else>You have no events!</div>
-
+    <div v-else>You have no events!</div>
 </template>

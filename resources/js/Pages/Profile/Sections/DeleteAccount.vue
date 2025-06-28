@@ -50,7 +50,7 @@ const submit = () => {
                             :class="{
                                 'border-red-500 ring-1 ring-red-500': form.errors.password
                             }"
-                            class="block w-1/2 pl-9 rounded-md text-sm dark:text-slate-900 border-slate-300 outline-0 focus:ring-1 focus:ring-inset focus:ring-blue-400 focus:border-blue-400 placeholder:text-slate-400"
+                            class="block w-full sm:w-1/2 pl-9 rounded-md text-sm dark:text-slate-900 border-slate-300 outline-0 focus:ring-1 focus:ring-inset focus:ring-blue-400 focus:border-blue-400 placeholder:text-slate-400"
                         />
                     </div>
                     <!-- Displaying error for password -->

@@ -25,7 +25,7 @@
 
 <template>
     <Head title="| Reset Password" />
-    <Container class="w-1/2">
+    <Container class="w-full max-w-md mx-auto p-6 bg-white dark:bg-slate-800 rounded-lg shadow-md">
         <div class="text-center mb-8">
             <Title>Enter Your New Password</Title>
         </div>

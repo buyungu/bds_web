@@ -48,7 +48,55 @@ const mobileMenuItems = computed(() => {
 
 <template>
     <div class="h-full min-h-screen flex flex-col">
+        <!-- Overlay first -->
         <div v-show="showMobileMenu" @click="closeMobileMenuAndUserMenu" class="fixed inset-0 z-40 bg-black opacity-50 lg:hidden"></div>
+        <!-- Mobile menu after, with higher z-index -->
+        <transition
+            enter-active-class="transition ease-out duration-200 transform"
+            enter-from-class="-translate-y-full opacity-0"
+            enter-to-class="translate-y-0 opacity-100"
+            leave-active-class="transition ease-in duration-150 transform"
+            leave-from-class="translate-y-0 opacity-100"
+            leave-to-class="-translate-y-full opacity-0"
+        >
+            <div v-show="showMobileMenu" class="lg:hidden bg-slate-700 pb-4 z-50 fixed top-20 left-0 w-full">
+                <div class="flex flex-col items-center space-y-2 py-2">
+                    <NavLink routeName="home" componentName="Home" @click="closeMobileMenuAndUserMenu">Home</NavLink>
+                    <NavLink routeName="events" componentName="Events" @click="closeMobileMenuAndUserMenu">Events</NavLink>
+                </div>
+                <div class="border-t border-slate-600 my-2"></div>
+
+                <div v-if="user" class="flex flex-col items-center space-y-2 py-2">
+                    <div class="flex items-center gap-2 mb-2">
+                        <img
+                            :src="
+                                user.avatar
+                                    ? `/storage/${user.avatar}`
+                                    : '/storage/avatars/default.jpg'
+                            "
+                            alt=""
+                            class="rounded-full h-8 w-8 object-cover object-center"
+                        />
+                        <span class="text-white font-medium text-sm">{{ user.name }}</span>
+                    </div>
+
+                    <NavLink
+                        v-for="item in mobileMenuItems"
+                        :key="item.href"
+                        :routeName="item.href"
+                        @click="closeMobileMenuAndUserMenu"
+                    >
+                        {{ item.text }}
+                    </NavLink>
+
+                    <NavLink :href="route('logout')" method="post" as="button" @click="closeMobileMenuAndUserMenu">Log Out</NavLink>
+                </div>
+                <div v-else class="flex flex-col items-center space-y-2 py-2">
+                    <NavLink routeName="login" componentName="Login" @click="closeMobileMenuAndUserMenu">Login</NavLink>
+                    <NavLink routeName="register" componentName="Register" @click="closeMobileMenuAndUserMenu">Register</NavLink>
+                </div>
+            </div>
+        </transition>
 
         <div class="bg-slate-800 text-white">
             <nav class="mx-auto max-w-screen-lg p-2 flex items-center justify-between">
@@ -85,56 +133,9 @@ const mobileMenuItems = computed(() => {
                     </button>
                 </div>
             </nav>
-
-            <transition
-                enter-active-class="transition ease-out duration-200 transform"
-                enter-from-class="-translate-y-full opacity-0"
-                enter-to-class="translate-y-0 opacity-100"
-                leave-active-class="transition ease-in duration-150 transform"
-                leave-from-class="translate-y-0 opacity-100"
-                leave-to-class="-translate-y-full opacity-0"
-            >
-                <div v-show="showMobileMenu" class="lg:hidden bg-slate-700 pb-4">
-                    <div class="flex flex-col items-center space-y-2 py-2">
-                        <NavLink routeName="home" componentName="Home" @click="closeMobileMenuAndUserMenu">Home</NavLink>
-                        <NavLink routeName="events" componentName="Events" @click="closeMobileMenuAndUserMenu">Events</NavLink>
-                    </div>
-                    <div class="border-t border-slate-600 my-2"></div>
-
-                    <div v-if="user" class="flex flex-col items-center space-y-2 py-2">
-                        <div class="flex items-center gap-2 mb-2">
-                            <img
-                                :src="
-                                    user.avatar
-                                        ? `/storage/${user.avatar}`
-                                        : '/storage/avatars/default.jpg'
-                                "
-                                alt=""
-                                class="rounded-full h-8 w-8 object-cover object-center"
-                            />
-                            <span class="text-white font-medium text-sm">{{ user.name }}</span>
-                        </div>
-
-                        <NavLink
-                            v-for="item in mobileMenuItems"
-                            :key="item.href"
-                            :routeName="item.href"
-                            @click="closeMobileMenuAndUserMenu"
-                        >
-                            {{ item.text }}
-                        </NavLink>
-
-                        <NavLink :href="route('logout')" method="post" as="button" @click="closeMobileMenuAndUserMenu">Log Out</NavLink>
-                    </div>
-                    <div v-else class="flex flex-col items-center space-y-2 py-2">
-                        <NavLink routeName="login" componentName="Login" @click="closeMobileMenuAndUserMenu">Login</NavLink>
-                        <NavLink routeName="register" componentName="Register" @click="closeMobileMenuAndUserMenu">Register</NavLink>
-                    </div>
-                </div>
-            </transition>
         </div>
 
-        <main class="mx-auto flex-grow max-w-screen-lg p-4">
+        <main class=" flex-grow  p-4">
             <slot/>
         </main>
 

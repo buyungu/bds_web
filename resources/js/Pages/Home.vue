@@ -17,6 +17,7 @@ const user = usePage().props.auth.user;
 
 <template>
     <Head title="| Home"/>
+      <div class="mx-auto max-w-screen-lg p-2">
     <ErrorMessage :error="error" />
     <SessionMessage :status="status" />
     <div class="text-center mt-14 pb-14 px-4 border-b-4">
@@ -50,5 +51,5 @@ const user = usePage().props.auth.user;
         <Index class="my-10" :events="events" :status="status"/>
     </div>
 
-
+</div>
 </template>

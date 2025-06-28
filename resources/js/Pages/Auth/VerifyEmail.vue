@@ -18,7 +18,7 @@ import SessionMessage from '../../Components/SessionMessage.vue';
 <template>
     <Head title=" | Email Verification" />
 
-    <Container class="w-1/2">
+    <Container class="w-full max-w-md mx-auto p-6 bg-white dark:bg-slate-800 rounded-lg shadow-md">
         <div class="mb-8">
             <p>
                 Thanks for signing up! Before getting started,

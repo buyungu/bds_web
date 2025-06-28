@@ -22,7 +22,7 @@ const formatDate = (date) => new Date(date).toLocaleDateString();
 
 <template>
     
-    <div class="max-w-5xl mx-auto">
+    <div class="w-full max-w-7xl mx-auto px-4 py-6">
         
         <!-- Check if there are events -->
          <div v-if="events.data.length">

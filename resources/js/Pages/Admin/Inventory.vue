@@ -77,20 +77,18 @@ const { isSidebarOpen } = useSidebar()
 <template>
     <Head title=" | Inventory Management"/>
     <div :class="[isSidebarOpen ? 'ml-72' : 'ml-0', 'transition-all duration-300 ']">
-    <DemoHeader />
-    <Sidebar />
-    <div class=" p-8">
-
-        <div class="flex items-center justify-between ">
-            <div class="flex items-center gap-4 w-1/2">
-
-                <div class="relative w-full rounded-lg">
-
-                    <div class="pointer-event-non absolute inset-y-0 left-0 flex items-center pl-3">
-                        <span class="grid place-content-center text-sm text-slate-400">
-                            <i class="fa-solid fa-city"></i>
-                        </span>
-                    </div>
+        <DemoHeader />
+        <Sidebar />
+        <div class="p-4 sm:p-8">
+            <!-- Responsive Filter/Search Bar -->
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+                <div class="flex flex-col sm:flex-row items-stretch gap-2 w-full sm:w-auto">
+                    <div class="relative w-full rounded-lg">
+                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                            <span class="grid place-content-center text-sm text-slate-400">
+                                <i class="fa-solid fa-city"></i>
+                            </span>
+                        </div>
                         <select
                             @change="selectRegion"
                             id="region"
@@ -99,23 +97,16 @@ const { isSidebarOpen } = useSidebar()
                             placeholder="Filter by Region"
                             class="block w-full rounded-md pr-3 pl-9 text-sm dark:text-slate-900 border-slate-300 outline-0 focus:ring-1 focus:ring-inset focus:ring-blue-400 focus:border-blue-400 placeholder:text-slate-400"
                         >
-                            <option 
-                                value="" disabled selected>Filter by Region
-                            </option>
-                            <option v-for="region in regions"
-                                :key="region" 
-                                :value="region">{{ region }}</option>
-                            
+                            <option value="" disabled selected>Filter by Region</option>
+                            <option v-for="region in regions" :key="region" :value="region">{{ region }}</option>
                         </select>
-                    
-                </div>
-                <div class="relative w-full rounded-lg">
-
-                    <div class="pointer-event-non absolute inset-y-0 left-0 flex items-center pl-3">
-                        <span class="grid place-content-center text-sm text-slate-400">
-                            <i class="fa-solid fa-city"></i>
-                        </span>
                     </div>
+                    <div class="relative w-full rounded-lg">
+                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                            <span class="grid place-content-center text-sm text-slate-400">
+                                <i class="fa-solid fa-city"></i>
+                            </span>
+                        </div>
                         <select
                             @change="selectDistrict"
                             id="district"
@@ -124,45 +115,29 @@ const { isSidebarOpen } = useSidebar()
                             placeholder="Filter by District"
                             class="block w-full rounded-md pr-3 pl-9 text-sm dark:text-slate-900 border-slate-300 outline-0 focus:ring-1 focus:ring-inset focus:ring-blue-400 focus:border-blue-400 placeholder:text-slate-400"
                         >
-                            <option 
-                                value=""
-                            
-                                disabled selected>Filter by District
-                            </option>
-                            <option v-for="district in districts"
-                                :key="district" 
-                                :value="district">{{ district }}</option>
-                            
+                            <option value="" disabled selected>Filter by District</option>
+                            <option v-for="district in districts" :key="district" :value="district">{{ district }}</option>
                         </select>
-                    
+                    </div>
                 </div>
-                
+                <div class="w-full sm:w-1/3">
+                    <form @submit.prevent="search">
+                        <InputField
+                            label=""
+                            icon="magnifying-glass"
+                            placeholder="Search Hospital..."
+                            v-model="form.search"
+                        />
+                    </form>
+                </div>
             </div>
-            
-            <div class=" w-1/4">
-                
-                <form @submit.prevent="search">
-                    <InputField
-                        label=""
-                        icon="magnifying-glass"
-                        placeholder="Search Hospital..."
-                        v-model="form.search"
-                    />
-                </form>
-            </div>
-        </div>
 
-        <div class="flex items-center justify-end gap-3 mt-3 mb-6">
+            <!-- Responsive Filter Tags -->
+            <div class="flex flex-wrap items-center gap-2 mb-6">
                 <Link
                     class="px-2 py-[6px] rounded-md bg-blue-500 text-white flex items-center gap-2"
                     v-if="params.search"
-                    :href="
-                        route('admin.inventory', {
-                            ...params,
-                            search: null,
-                            page: null,
-                        })
-                    "
+                    :href="route('admin.inventory', { ...params, search: null, page: null })"
                 >
                     {{ params.search }}
                     <i class="fa-solid fa-xmark"></i>
@@ -170,13 +145,7 @@ const { isSidebarOpen } = useSidebar()
                 <Link
                     class="px-2 py-[6px] rounded-md bg-blue-500 text-white flex items-center gap-2"
                     v-if="params.blood_type"
-                    :href="
-                        route('admin.inventory', {
-                            ...params,
-                            blood_type: null,
-                            page: null,
-                        })
-                    "
+                    :href="route('admin.inventory', { ...params, blood_type: null, page: null })"
                 >
                     {{ params.blood_type }}
                     <i class="fa-solid fa-xmark"></i>
@@ -197,55 +166,45 @@ const { isSidebarOpen } = useSidebar()
                     {{ params.district }}
                     <i class="fa-solid fa-xmark"></i>
                 </Link>
-                
-                
             </div>
 
+            <!-- Responsive Cards Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <Card
+                    @click="selectBloodType(stock.blood_type)"
+                    v-for="(stock, index) in bloodStock" 
+                    :key="index"
+                    :number="stock.total_quantity"
+                    :name="`Blood ${stock.blood_type}`"
+                    routeName="admin.inventory"
+                    :label="stock.blood_type"
+                    quantity="Unit"
+                />
+            </div>
 
-        <div class="grid grid-cols-4 gap-6">
-            <Card
-                @click="selectBloodType(stock.blood_type)"
-                v-for="(stock, index) in bloodStock" 
-                :key="index"
-                :number="stock.total_quantity"
-                :name="`Blood ${stock.blood_type}`"
-                routeName="admin.inventory"
-                :label="stock.blood_type"
-                quantity="Unit"
-            />
-            
+            <!-- Responsive Table -->
+            <div class="max-w-6xl mx-auto my-8 dark:text-white overflow-x-auto rounded-md">
+                <table class="min-w-[600px] w-full table-fixed border-collapse overflow-hidden text-sm ring-1 ring-slate-300 dark:ring-slate-600 bg-white shadow-lg">
+                    <thead class="bg-slate-300 text-xs uppercase text-slate-600 dark:text-slate-400 dark:bg-slate-900">
+                        <tr>
+                            <th class="p-3 text-left">Hospital</th>
+                            <th class="p-3 text-left w-1/4">Location</th>
+                            <th class="p-3 text-right">Blood type</th>
+                            <th class="p-3 w-1/5 text-right">quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="blood in props.bloodData.data" :key="blood.id" class="border-b border-slate-200 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-600 dark:border-slate-600">
+                            <td class="p-3">{{ blood.hospital.name }}</td>
+                            <td class="p-3 w-1/4">{{ blood.hospital.location.address}}</td>
+                            <td class="p-3 text-right">{{ blood.blood_type }}</td>
+                            <td class="p-3 w-1/5 text-right pr-10">{{ blood.quantity }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!-- Pagination Controls -->
+                <PaginationLinks :paginator="bloodData" />
+            </div>
         </div>
-
-
-        <div class="max-w-6xl mx-auto my-8 dark:text-white">
-            
-            <table class="w-full table-fixed border-collapse overflow-hidden rounded-md text-sm ring-1 ring-slate-300 dark:ring-slate-600 bg-white shadow-lg">
-                <thead
-                    class="bg-slate-300 text-xs uppercase text-slate-600 dark:text-slate-400 dark:bg-slate-900"
-                >
-                    <tr>
-                        <th class="p-3 text-left">Hospital</th>
-                        <th class="p-3 text-left w-1/4">Location</th>
-                        <th class="p-3 text-right">Blood type</th>
-                        <th class="p-3 w-1/5 text-right">quantity</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="blood in props.bloodData.data" :key="blood.id" class="border-b border-slate-200 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-600 dark:border-slate-600">
-                        <td class="p-3">{{ blood.hospital.name }}</td>
-                        <td class="p-3 w-1/4">{{ blood.hospital.location.address}}</td>
-                        <td class="p-3 text-right">{{ blood.blood_type }}</td>
-                        <td class="p-3 w-1/5 text-right pr-10">{{ blood.quantity }}</td>
-                        
-                    </tr>
-                </tbody>
-            </table>
-
-            <!-- Pagination Controls -->
-            <PaginationLinks :paginator="bloodData" />
-        </div>
-
     </div>
-    </div>
-
 </template>
