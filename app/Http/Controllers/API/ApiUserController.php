@@ -104,7 +104,7 @@ class ApiUserController extends Controller
 
 
 
-    // Register a user (donor) to an event
+// Register a user (donor) to an event
     public function enrollToEvent(Request $request, Event $event)
     {
         $user = $request->user();
@@ -134,7 +134,7 @@ class ApiUserController extends Controller
             'status' => 'pending'
         ]);
 
-        // Send FCM notification to the user
+        // Send FCM notification to the user and log it
         if ($user->fcm_token) {
             FcmNotification::send(
                 $user->fcm_token,
@@ -142,7 +142,9 @@ class ApiUserController extends Controller
                 "You have successfully enrolled in the event: {$event->title}",
                 [
                     'route' => "/event-details/{$event->id}", // Flutter expects this for navigation
-                    'event_id' => $event->id, 'type' => 'event']
+                    'event_id' => $event->id, 'type' => 'event'
+                ],
+                $user->id // Pass the user ID here
             );
         }
 
@@ -156,7 +158,6 @@ class ApiUserController extends Controller
     public function unenrollfromEvent(Request $request, EventRegistration $enroll)
     {
         $user = $request->user();
-        
 
         // Ensure only the owner can delete their registration
         if (auth()->id() !== $enroll->user_id) {
@@ -180,11 +181,9 @@ class ApiUserController extends Controller
         } else {
             // If the user was successfully unenrolled, we can proceed
             $enroll->delete();
-        }   
-        
+        }
 
-
-        // Send FCM notification to the user
+        // Send FCM notification to the user and log it
         if ($user->fcm_token && $event) {
             FcmNotification::send(
                 $user->fcm_token,
@@ -193,7 +192,8 @@ class ApiUserController extends Controller
                 [
                     'route' => "/event-details/{$event->id}", // Flutter expects this for navigation
                     'event_id' => $event->id, 'type' => 'event'
-                ]
+                ],
+                $user->id // Pass the user ID here
             );
         }
 
@@ -201,8 +201,6 @@ class ApiUserController extends Controller
             'message' => 'Successfully unenrolled from the event.'
         ]);
     }
-
-
 
     // Get hospitals in recipient's region
     public function getHospitals(Request $request)
@@ -303,7 +301,7 @@ class ApiUserController extends Controller
         ]);
     }
 
-    // Donate blood
+// Donate blood
     public function donate(Request $request, $bloodRequestId)
     {
         $donor = $request->user();
@@ -317,26 +315,28 @@ class ApiUserController extends Controller
             ], 400);
         }
 
-        // send FCM notification to the donor
+        // send FCM notification to the donor and log it
         if ($donor->fcm_token) {
             FcmNotification::send(
                 $donor->fcm_token,
                 'Donation Confirmation',
                 "You have pledged to donate for request: {$bloodRequest->id}",
                 [
-                    'blood_request_id' => $bloodRequest->id, 
+                    'blood_request_id' => $bloodRequest->id,
                     'type' => 'donation'
-                ]
+                ],
+                $donor->id // Pass the donor's user ID here
             );
         }
 
-        // Send FCM notification to the recipient and hospital
+        // Send FCM notification to the recipient and hospital (and log it for the recipient)
         if ($bloodRequest->recipient->fcm_token) {
             FcmNotification::send(
                 $bloodRequest->recipient->fcm_token,
                 'New Donation',
                 "A donor has pledged to donate for your request: {$bloodRequest->id}",
-                ['blood_request_id' => $bloodRequest->id, 'type' => 'donation']
+                ['blood_request_id' => $bloodRequest->id, 'type' => 'donation'],
+                $bloodRequest->recipient->id // Pass the recipient's user ID here
             );
         }
 
@@ -370,7 +370,7 @@ class ApiUserController extends Controller
     }
 
 
-    public function createBloodRequest(Request $request) 
+    public function createBloodRequest(Request $request)
     {
         $validated = $request->validate([
             'hospital_id' => 'required|exists:users,id',
@@ -387,7 +387,7 @@ class ApiUserController extends Controller
         $bloodRequest = new BloodRequest($validated);
         $bloodRequest->save();
 
-        // Send FCM notification to the recipient
+        // Send FCM notification to the recipient and log it
         if ($request->user()->fcm_token) {
             FcmNotification::send(
                 $request->user()->fcm_token,
@@ -395,12 +395,12 @@ class ApiUserController extends Controller
                 "Your blood request has been created successfully.",
                 [
                     'blood_request_id' => $bloodRequest->id, 'type' => 'donation'
-                ]
+                ],
+                $request->user()->id // Pass the recipient's user ID here
             );
         }
 
-        // Send FCM notification to donors in the same region whose specified blood type matches
-
+        // Send FCM notification to donors in the same region whose specified blood type matches (multicast)
         $region = $request->user()->location['region'] ?? null;
         $bloodType = $bloodRequest->blood_type;
 
@@ -412,6 +412,8 @@ class ApiUserController extends Controller
             ->pluck('fcm_token')
             ->toArray();
 
+        // If you want to log individual notifications for each donor, you'd loop here and call FcmNotification::send() for each.
+        // For sendToMany, we're logging one record for the entire multicast attempt.
         if (!empty($donors)) {
             FcmNotification::sendToMany(
                 $donors,
@@ -429,8 +431,8 @@ class ApiUserController extends Controller
             'message' => 'Your blood request has been submitted successfully.',
             'data' => $bloodRequest
         ], 201);
-
     }
+
 
     public function saveFcmToken(Request $request)
     {

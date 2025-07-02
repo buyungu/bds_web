@@ -37,7 +37,8 @@ class BloodRequestController extends Controller
                 $request->user()->fcm_token,
                 'Blood Request Created',
                 "Your blood request has been created successfully.",
-                ['blood_request_id' => $bloodRequest->id, 'type' => 'donation']
+                ['blood_request_id' => $bloodRequest->id, 'type' => 'donation'],
+                $request->user()->id // Pass the recipient's user ID here
             );
         }
 
@@ -103,7 +104,8 @@ class BloodRequestController extends Controller
                 $donor->fcm_token,
                 'Donation Confirmation',
                 "You have pledged to donate for request: {$bloodRequest->id}",
-                ['blood_request_id' => $bloodRequest->id, 'type' => 'donation']
+                ['blood_request_id' => $bloodRequest->id, 'type' => 'donation'],
+                $donor->id // Pass the donor's user ID here
             );
         }
 
@@ -113,7 +115,8 @@ class BloodRequestController extends Controller
                 $bloodRequest->recipient->fcm_token,
                 'New Donation',
                 "A donor has pledged to donate for your request: {$bloodRequest->id}",
-                ['blood_request_id' => $bloodRequest->id, 'type' => 'donation']
+                ['blood_request_id' => $bloodRequest->id, 'type' => 'donation'],
+                $bloodRequest->recipient->id // Pass the recipient's user ID here
             );
         }
     

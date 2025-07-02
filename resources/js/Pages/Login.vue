@@ -24,7 +24,7 @@ const submit = () => {
 
 <template>
     <Head title="| Login" />
-    <Container class="w-full max-w-md mx-auto p-6 bg-white dark:bg-slate-800 rounded-lg shadow-md">
+    <Container class="w-full sm:w-2/3 lg:w-1/3 max-w-md mx-auto p-6 bg-white dark:bg-slate-800 rounded-lg shadow-md">
         <div class="text-center mb-8">
             <Title>Login to your account</Title>
             <p>Don't have an account? <TextLink neno="Register" routeName="register" /></p>
