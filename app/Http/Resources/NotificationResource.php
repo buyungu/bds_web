@@ -24,6 +24,8 @@ class NotificationResource extends JsonResource
             'message' => $this->body, // Use 'body' as 'message' for the frontend
             'time' => $this->sent_at ? Carbon::parse($this->sent_at)->diffForHumans() : null, // "2 mins ago", "1 day ago"
             'type' => $this->data['type'] ?? 'general', // Get 'type' from the 'data' JSON field
+            'event_id' => $this->data['event_id'] ?? null, // Optional: if the notification is related to an event
+            'blood_request_id' => $this->data['blood_request_id'] ?? null, // Optional: if related to a blood request
             'important' => $isImportant, // You can define logic for this
             'status' => $this->status,
             'error_message' => $this->error_message,
