@@ -23,7 +23,7 @@ const { isSidebarOpen } = useSidebar()
 
     <DemoHeader />
     <Sidebar />
-    <div class="ml-72 p-8">
+    <div class="p-8">
         <UpdateInfo :user="user" :status="status"/>
         <UpdatePassword :message="message"/>
         <DeleteAccount :deleted="deleted"/>

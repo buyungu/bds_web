@@ -78,10 +78,10 @@ class ApiUserController extends Controller
     {
         $user = $request->user();
         $region = $user->location['region'];
-        $bloodType = $user->blood_type;
+        // $bloodType = $user->blood_type;
 
         $bloodRequests = BloodRequest::whereIn('status', ['pending', 'partially matched', 'matched'])
-            ->where('blood_type', $bloodType)
+            // ->where('blood_type', $bloodType)
             ->whereHas('hospital', function ($query) use ($region) {
                 $query->where('location->region', $region);
             })
