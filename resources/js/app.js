@@ -33,7 +33,7 @@ createInertiaApp({
       .use(ZiggyVue)
       .use(VueGoogleMaps, {
         load: {
-          key: 'AIzaSyD75dUgw57R6h0jaxGcmwOamWBOinq2FXE',
+          key: 'API key goes here',
           libraries: "places",
         },
       })
